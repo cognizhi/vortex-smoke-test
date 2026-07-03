@@ -95,7 +95,8 @@ src/
 │   ├── site/[slug]/         # Public booking page + BookingFlow + cancel pages
 │   │   └── api/             # Slug-scoped booking/slots/confirm/cancel handlers
 │   └── api/                 # Platform APIs: auth/*, admin/*, booking/*, cancel/*,
-│                            #   check-slug, health, healthz-smoke, avatars/[filename]
+│                            #   check-slug, health, healthz-smoke, healthz-smoke-*,
+│                            #   avatars/[filename]
 ├── components/
 │   ├── ui/                  # button, card, theme-toggle (shadcn/ui-style)
 │   ├── layout/              # header, user-profile
@@ -158,6 +159,10 @@ store in prod); served back through `/api/avatars/[filename]`.
   load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
   with zero dependencies (no database, auth, or external service calls). Designed
   for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke-518124667`** (SPRINT-0004) — Variant smoke test endpoint
+  for canary deployments and blue-green rollouts. Returns `{ ok: true, variant: "518124667" }`
+  with zero dependencies. Allows independent health tracking and load balancer routing
+  per deployment variant, with response time < 100ms.
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +209,19 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+## 10. Changelog
+
+### 2026-07-03 — SPRINT-0004
+
+**Added**
+- **Variant smoke test endpoint** `/api/healthz-smoke-518124667` for specialized
+  monitoring and canary deployment workflows
+  - Returns `{ "ok": true, "variant": "518124667" }` with zero dependencies
+  - Complements `/api/healthz-smoke` for extended monitoring coverage
+  - Supports independent load balancer routing and health tracking by deployment variant
+  - Target response time < 100ms
+
+### Historical Changelog
+
+**SPRINT-0033** added `/api/healthz-smoke` endpoint for lightweight, stateless health checks.
