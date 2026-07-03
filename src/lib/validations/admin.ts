@@ -209,74 +209,55 @@ const discountCodeSchema = z
   .regex(/^[A-Z0-9-]+$/i, 'Code must contain only letters, numbers, and hyphens')
   .transform((v) => v.toUpperCase());
 
+/** Transform datetime-local input (YYYY-MM-DDTHH:MM) to ISO 8601 with Z suffix */
+const datetimeLocalSchema = z
+  .string()
+  .regex(/^\d{4}-\d{2}-\d{2}T\d{2}:\d{2}$/, 'Invalid datetime format (expected YYYY-MM-DDTHH:MM)')
+  .transform((v) => `${v}:00Z`)
+  .pipe(z.string().datetime({ message: 'Invalid datetime value' }))
+  .refine((d) => new Date(d) > new Date(Date.now() + 86400000), {
+    message: 'Date must be at least 1 day in the future',
+  });
+
 export const createDiscountSchema = z
   .object({
     code: discountCodeSchema,
-    type: z.enum(['percentage', 'fixed_amount'], {
-      errorMap: () => ({ message: 'Type must be "percentage" or "fixed_amount"' }),
-    }),
-    value: z.number().positive('Value must be greater than 0'),
-    expirationDate: z
-      .string()
-      .datetime({ message: 'Expiration date must be a valid ISO 8601 datetime' })
-      .refine((d) => new Date(d) > new Date(Date.now() + 86400000), {
-        message: 'Expiration date must be at least 1 day in the future',
-      }),
+    discountPercentage: z
+      .number()
+      .min(0.01, 'Discount must be at least 0.01%')
+      .max(100, 'Discount cannot exceed 100%'),
+    startsAt: datetimeLocalSchema,
+    endsAt: datetimeLocalSchema,
     description: z.string().max(255, 'Description must be 255 characters or fewer').optional(),
   })
-  .refine(
-    (data) => {
-      if (data.type === 'percentage') {
-        return data.value > 0 && data.value <= 100;
-      }
-      if (data.type === 'fixed_amount') {
-        return data.value > 0 && data.value <= 99999.99;
-      }
-      return true;
-    },
-    (data) => ({
-      message:
-        data.type === 'percentage'
-          ? 'Percentage must be between 0.01 and 100'
-          : 'Fixed amount must be between 0.01 and 99,999.99',
-      path: ['value'],
-    })
-  );
+  .refine((data) => new Date(data.endsAt) > new Date(data.startsAt), {
+    message: 'End date must be after start date',
+    path: ['endsAt'],
+  });
 
 export const updateDiscountSchema = z
   .object({
     code: discountCodeSchema.optional(),
-    type: z.enum(['percentage', 'fixed_amount']).optional(),
-    value: z.number().positive('Value must be greater than 0').optional(),
+    discountPercentage: z
+      .number()
+      .min(0.01, 'Discount must be at least 0.01%')
+      .max(100, 'Discount cannot exceed 100%')
+      .optional(),
+    startsAt: datetimeLocalSchema.optional(),
+    endsAt: datetimeLocalSchema.optional(),
     description: z.string().max(255, 'Description must be 255 characters or fewer').optional().nullable(),
-    expirationDate: z
-      .string()
-      .datetime({ message: 'Expiration date must be a valid ISO 8601 datetime' })
-      .optional()
-      .refine((d) => !d || new Date(d) > new Date(Date.now() + 86400000), {
-        message: 'Expiration date must be at least 1 day in the future',
-      }),
     isActive: z.boolean().optional(),
   })
-  .refine(
-    (data) => {
-      // If type is specified, validate value range
-      if (data.type === 'percentage' && data.value !== undefined) {
-        return data.value > 0 && data.value <= 100;
-      }
-      if (data.type === 'fixed_amount' && data.value !== undefined) {
-        return data.value > 0 && data.value <= 99999.99;
-      }
-      return true;
-    },
-    (data) => ({
-      message:
-        data.type === 'percentage'
-          ? 'Percentage must be between 0.01 and 100'
-          : 'Fixed amount must be between 0.01 and 99,999.99',
-      path: ['value'],
-    })
-  );
+  .refine((data) => {
+    // If both dates are provided, ensure end > start
+    if (data.startsAt !== undefined && data.endsAt !== undefined) {
+      return new Date(data.endsAt) > new Date(data.startsAt);
+    }
+    return true;
+  }, {
+    message: 'End date must be after start date',
+    path: ['endsAt'],
+  });
 
 export type CreateDiscountInput = z.infer<typeof createDiscountSchema>;
 export type UpdateDiscountInput = z.infer<typeof updateDiscountSchema>;

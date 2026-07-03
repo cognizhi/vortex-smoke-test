@@ -12,7 +12,8 @@ export interface Discount {
   type: DiscountType;
   value: number;
   description?: string | null;
-  expirationDate?: Date | null;
+  startsAt: Date;
+  endsAt: Date;
   isActive: boolean;
   timesUsed: number;
   createdAt: Date;

@@ -221,7 +221,8 @@ export function createMerchantSchema(schemaName: string) {
       type: text('type', { enum: ['percentage', 'fixed_amount'] }).notNull(),
       value: numeric('value', { precision: 10, scale: 2 }).notNull(),
       description: text('description'),
-      expirationDate: timestamp('expiration_date', { withTimezone: true }).notNull(),
+      startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
+      endsAt: timestamp('ends_at', { withTimezone: true }).notNull(),
       isActive: boolean('is_active').notNull().default(true),
       timesUsed: integer('times_used').notNull().default(0),
       createdAt: timestamp('created_at', { withTimezone: true }).defaultNow().notNull(),
@@ -249,5 +250,5 @@ export function createMerchantSchema(schemaName: string) {
 
 export type MerchantSchemaType = ReturnType<typeof createMerchantSchema>;
 
-export type Discount = typeof discounts.$inferSelect;
-export type InsertDiscount = typeof discounts.$inferInsert;
+export type Discount = MerchantSchemaType['discounts']['$inferSelect'];
+export type InsertDiscount = MerchantSchemaType['discounts']['$inferInsert'];
