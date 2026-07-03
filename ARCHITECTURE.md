@@ -158,6 +158,12 @@ store in prod); served back through `/api/avatars/[filename]`.
   load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
   with zero dependencies (no database, auth, or external service calls). Designed
   for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke-{variant}`** (SPRINT-0005+) — Variant-specific health check
+  endpoints for deployment verification and A/B testing. Each endpoint returns
+  `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
+  systems to verify specific application variants are deployed and reachable. Current
+  variants: `423911289` (SPRINT-0006), `547016860` (SPRINT-0005), `518124667`
+  (SPRINT-0003), `859005244` (SPRINT-0002), `908186049` (SPRINT-0001).
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +210,40 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+---
+
+## Changelog
+
+### 2026-07-03 — SPRINT-0006: Variant smoke test endpoint (423911289)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-423911289` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "423911289" }` with zero
+  dependencies (no database, auth, or external calls).
+- Documented variant endpoint pattern in health check section. Variant endpoints enable
+  monitoring systems to verify specific application variants are deployed and reachable,
+  supporting canary deployments and A/B testing scenarios.
+- Comprehensive test coverage for variant endpoint including response validation,
+  performance metrics, and load testing.
+
+**Implementation details:**
+- Variant endpoints follow the lightweight, dependency-free pattern established by base
+  `/api/healthz-smoke` endpoint.
+- Each variant is implemented as a separate route file (`/api/healthz-smoke-{variant}/route.ts`).
+- Hardcoded variant identifier enables deployment verification without dynamic configuration.
+- Target response time < 100ms (typical < 10ms).
+
+### 2026-07-03 — SPRINT-0005: Variant smoke test endpoint infrastructure
+
+**Added:**
+- Initial variant-specific health check endpoint pattern with `/api/healthz-smoke-547016860`.
+- Foundation for deployment verification and A/B testing scenarios.
+- Documented variant endpoints in operations section of PRODUCT.md.
+
+### 2026-07-03 — SPRINT-0033: Base health endpoints
+
+**Added:**
+- Core health check endpoints: `/api/health` and `/api/healthz-smoke`.
+- Lightweight smoke test endpoint for monitoring and load balancer integration.
+- Health check documentation in operations section.
