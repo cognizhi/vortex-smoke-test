@@ -127,3 +127,24 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+---
+
+## Changelog
+
+### SPRINT-0001 (2026-07-03)
+
+**Added:**
+- Nothing new in the design system this sprint
+
+**Changed:**
+- No changes to platform design tokens, theming, components, or public booking page styling
+
+**Removed:**
+- Nothing removed in this sprint
+
+**Design System Status:**
+- Platform design tokens remain unchanged
+- Light/dark mode theming continues to work as specified
+- Public booking page per-merchant theming system unchanged
+- All existing components and conventions remain in place

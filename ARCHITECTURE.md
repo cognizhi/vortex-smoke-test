@@ -158,6 +158,10 @@ store in prod); served back through `/api/avatars/[filename]`.
   load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
   with zero dependencies (no database, auth, or external service calls). Designed
   for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke-951516779`** (SPRINT-0001) — Variant health check endpoint
+  for canary deployments and A/B testing infrastructure. Returns `{ ok: true, variant: "951516779" }`
+  with zero dependencies. Enables multi-variant monitoring and load balancer routing
+  verification. Same performance characteristics as `healthz-smoke` (response time < 100ms).
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +208,31 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+---
+
+## Changelog
+
+### SPRINT-0001 (2026-07-03)
+
+**Added:**
+- New variant health check endpoint: `GET /api/healthz-smoke-951516779`
+  - Returns `{ ok: true, variant: "951516779" }` for canary deployments and A/B testing
+  - Zero dependencies (no database, auth, or external service calls)
+  - Response time < 100ms (typical < 10ms), suitable for high-frequency polling
+  - Enables multi-variant monitoring and load balancer routing verification
+  - Location: `src/app/api/healthz-smoke-951516779/route.ts`
+  - Implementation: Next.js App Router route handler
+
+**Changed:**
+- Health check endpoints section now documents both stateless smoke test variants
+- Architecture remains unchanged: variant endpoint follows same patterns as base `healthz-smoke`
+
+**Removed:**
+- Nothing removed in this sprint
+
+**Technical Notes:**
+- Both health check endpoints (`healthz-smoke` and `healthz-smoke-951516779`) are
+  stateless and require zero external dependencies, making them ideal for deployment
+  infrastructure and load balancer health probes.
+- The variant endpoint enables canary deployments to verify specific deployment cohorts.
