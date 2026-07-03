@@ -127,3 +127,19 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+---
+
+## Changelog
+
+### 2026-07-03 — SPRINT-0006: Variant smoke test endpoint (no design changes)
+
+This sprint focused on adding deployment verification infrastructure. No changes to the design system, platform tokens, or visual components.
+
+### 2026-07-03 — SPRINT-0005: Design system finalization
+
+**No changelog entry for this sprint at time of SPRINT-0005 authoring.**
+
+### 2026-07-03 — SPRINT-0004: Design system established
+
+**No changelog entry for this sprint at time of SPRINT-0004 authoring.**
