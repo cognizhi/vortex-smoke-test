@@ -110,15 +110,52 @@ SMS, waitlists, mandatory email verification, customer self-reschedule.
 - Architecture: `ARCHITECTURE.md`
 - Design system: `DESIGN.md`
 
+## 8. Health check endpoints
+
+The platform provides lightweight health check endpoints for monitoring, load balancers, and orchestration systems:
+
+### GET /api/health
+
+Basic health check returning platform status with timestamp:
+- Response: `{ "status": "healthy", "timestamp": "2026-07-03T06:52:00Z" }`
+- General monitoring and deployment health probes
+- Used for quick infrastructure status verification
+
+### GET /api/healthz-smoke
+
+Lightweight, stateless smoke test endpoint for high-frequency polling:
+- Response: `{ "data": { "ok": true }, "error": null }`
+- Zero dependencies (no database, auth, or external calls)
+- Response time < 100ms (typical < 10ms)
+- Designed for Kubernetes readiness probes, load balancer integration, monitoring systems
+- Suitable for continuous polling without overhead
+
+### GET /api/healthz-smoke-518124667
+
+Variant smoke test endpoint with identifier for specialized monitoring workflows:
+- Response: `{ "ok": true, "variant": "518124667" }`
+- Zero dependencies (no database, auth, or external calls)
+- Response time < 100ms (typical < 10ms)
+- Deployable independently for canary testing or variant routing
+- Used for load balancer health checks targeting a specific deployment variant
+
+All health endpoints are:
+- **Public** — no authentication required
+- **Fast** — < 100ms response time
+- **Self-contained** — no external dependencies
+- **Deterministic** — always return 200 with hardcoded JSON (infrastructure handles unreachability)
+
 ---
 
-# SPRINT-0033: Healthz-smoke Endpoint
+# Product Roadmap & Sprints
+
+## SPRINT-0033: Healthz-smoke Endpoint
 
 **Sprint Goal:** Add a lightweight health check endpoint for monitoring and load balancer integration.
 
-## Feature: GET /api/healthz-smoke
+### Feature: GET /api/healthz-smoke
 
-### Problem & Motivation
+**Problem & Motivation**
 
 Production deployments require fast, lightweight health check endpoints for:
 - **Load balancers** — HTTP-level readiness probes
@@ -132,7 +169,7 @@ Current `/api/health` endpoint includes timestamps and additional metadata. We n
 - Returns a single boolean: `ok: true`
 - Supports integration with external monitoring without overhead
 
-### Acceptance Criteria
+**Acceptance Criteria**
 
 ✅ **Endpoint exists and responds**
 - GET `/api/healthz-smoke` responds with HTTP 200
@@ -165,57 +202,116 @@ Current `/api/health` endpoint includes timestamps and additional metadata. We n
   - Test response time
 - Manual verification: endpoint responds correctly when server is running
 
-### What's In Scope
+**Decomposition: EPIC → STORY → TASK**
 
-- Single GET endpoint only
-- Minimal JSON response: `{ ok: true }`
-- No database connection or schema checks
-- No monitoring/alerting integration (just the endpoint)
+| Ticket | Type | Title | Parent | Notes |
+|--------|------|-------|--------|-------|
+| BKNG-0141 | EPIC | Healthz-smoke endpoint | — | Sprint container |
+| BKNG-0142 | STORY | Implement GET /api/healthz-smoke endpoint | BKNG-0141 | Feature specification |
+| BKNG-0143 | TASK | Implement healthz-smoke endpoint with tests | BKNG-0142 | Development work |
 
-### What's Out of Scope (Future Sprints)
+---
 
-- Extended health checks (database connectivity, schema version, queue depth)
-- Metrics export (Prometheus format)
-- Custom headers (X-Revision, X-Build-Date)
-- Multi-probe support (readiness vs. liveness)
-- Circuit breaker behavior (503 status on failure)
-- Load balancer-specific formats (gRPC health checks, custom protocols)
+## SPRINT-0004: Healthz-smoke Variant Endpoint
 
-### Technical Requirements
+**Sprint Goal:** Add a variant smoke test endpoint for specialized monitoring and canary deployment workflows.
+
+### Feature: GET /api/healthz-smoke-518124667
+
+**Problem & Motivation**
+
+Extended health check coverage for specialized monitoring workflows requires variant endpoints that can be targeted independently by load balancers, canary deployment systems, and monitoring dashboards. A variant-identified smoke test endpoint allows:
+- **Canary routing** — Direct traffic to specific deployment variants
+- **A/B monitoring** — Track health separately per variant
+- **Rollout strategies** — Gradual traffic shifting based on variant endpoints
+- **Load balancer routing** — Blue-green deployment health checks
+- **Monitoring dashboards** — Distinguish health signals by deployment variant
+
+Current smoke test endpoints are variant-agnostic. We need lightweight variant-identified endpoints that:
+- Return instantly (< 10ms)
+- Require zero dependencies (no database, auth, or external calls)
+- Return variant identifier alongside health status
+- Support independent routing and monitoring
+
+**Acceptance Criteria**
+
+✅ **Endpoint exists and responds**
+- GET `/api/healthz-smoke-518124667` responds with HTTP 200
+- Response body: `{ "ok": true, "variant": "518124667" }`
+- Content-Type: `application/json`
+
+✅ **Self-contained (no dependencies)**
+- No database queries
+- No authentication/authorization checks
+- No external service calls
+- No environment variable lookups (should work in any environment)
+
+✅ **Performance**
+- Response time < 100ms (typical < 10ms)
+- No blocking operations
+- Suitable for frequent polling by load balancers
+
+✅ **API consistency**
+- Simple JSON response format: `{ ok: boolean, variant: string }`
+- Uses Next.js App Router convention: `src/app/api/healthz-smoke-518124667/route.ts`
+- Includes JSDoc header documenting the endpoint
+
+✅ **Code quality**
+- TypeScript: strict type safety, zero implicit `any`
+- Linting: `npm run lint` passes with zero warnings
+- Type checking: `npm run typecheck` passes
+- Testing: comprehensive test coverage with Vitest
+  - Test successful 200 response with correct JSON shape
+  - Test no authentication required
+  - Verify `variant` field is "518124667"
+- Manual verification: endpoint responds correctly when server is running
+
+**Technical Requirements**
 
 **Endpoint Specification**
-- **Path:** `GET /api/healthz-smoke`
+- **Path:** `GET /api/healthz-smoke-518124667`
 - **Authentication:** None (public)
 - **Response Status:** 200 on success
 - **Response Body:**
   ```json
   {
-    "data": { "ok": true },
-    "error": null
+    "ok": true,
+    "variant": "518124667"
   }
   ```
 
 **Implementation Pattern**
-- Location: `src/app/api/healthz-smoke/route.ts`
+- Location: `src/app/api/healthz-smoke-518124667/route.ts`
 - Use Next.js `NextResponse.json()` API
-- Follow response envelope convention from existing endpoints
+- Return hardcoded JSON with no dynamic logic or dependencies
 - Include JSDoc header with endpoint description and response codes
 
 **Testing Coverage**
-- Unit test: response status and JSON structure
-- Unit test: no authentication required
-- Unit test: response time validation
-- Integration test: end-to-end with dev server
-- Manual test: `curl http://localhost:3000/api/healthz-smoke`
+- Unit test: response status 200 and correct JSON structure
+- Unit test: response contains `ok: true` and `variant: "518124667"`
+- Unit test: no database or external service calls
+- Manual test: `curl http://localhost:3000/api/healthz-smoke-518124667`
 
----
-
-## Decomposition: EPIC → STORY → TASK
+**Decomposition: EPIC → TASK**
 
 | Ticket | Type | Title | Parent | Idea | Notes |
 |--------|------|-------|--------|------|-------|
-| BKNG-0141 | EPIC | Healthz-smoke endpoint | — | BA-0030 | Sprint container |
-| BKNG-0142 | STORY | Implement GET /api/healthz-smoke endpoint | BKNG-0141 | — | Feature specification |
-| BKNG-0143 | TASK | Implement healthz-smoke endpoint with tests | BKNG-0142 | — | Development work |
+| VRTX-0018 | EPIC | Add /healthz-smoke-518124667 smoke test endpoint | — | VST-0004 | Sprint container |
+| VRTX-0019 | TASK | Implement /healthz-smoke-518124667 GET endpoint | VRTX-0018 | — | Development work |
 
-Each ticket includes full acceptance criteria matching this PRODUCT.md.
+---
+
+# Changelog
+
+## 2026-07-03 — SPRINT-0004
+
+**Added**
+- **Variant smoke test endpoint** `/api/healthz-smoke-518124667` for specialized monitoring and canary deployment workflows
+  - Returns `{ "ok": true, "variant": "518124667" }` with zero dependencies
+  - Target response time < 100ms
+  - Supports independent load balancer routing and health tracking by deployment variant
+  - Complements the existing `/api/healthz-smoke` endpoint for extended monitoring coverage
+
+## Historical Changelog
+
+(SPRINT-0033 and earlier changes documented above in sprint sections)
