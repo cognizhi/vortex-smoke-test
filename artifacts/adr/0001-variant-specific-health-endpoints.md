@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (SPRINT-0005+)
+Accepted (SPRINT-0005+, continuing through SPRINT-0007)
 
 ## Context
 
@@ -117,8 +117,10 @@ export async function GET(req, { params }) {
 ## Related sprints
 
 - **SPRINT-0033:** Initial health check endpoints (`/api/health`, `/api/healthz-smoke`)
-- **SPRINT-0001–0005:** Early variant endpoint implementations
+- **SPRINT-0001–0003:** Early variant endpoint implementations (`908186049`, `859005244`, `518124667`)
+- **SPRINT-0005:** Introduction of variant endpoint pattern with `547016860`
 - **SPRINT-0006:** Addition of variant `423911289`
+- **SPRINT-0007:** Addition of variant `963602537`
 
 ## Future considerations
 
