@@ -154,10 +154,15 @@ store in prod); served back through `/api/avatars/[filename]`.
 ### Health check endpoints
 - **`/api/health`** — Basic health check returning `{ status, timestamp }`. Used
   for general monitoring and deployment health probes.
-- **`/api/healthz-smoke`** (SPRINT-0033) — Lightweight, stateless smoke test for
-  load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
-  with zero dependencies (no database, auth, or external service calls). Designed
-  for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers
+  and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero
+  dependencies (no database, auth, or external service calls). Designed for frequent
+  polling with response time < 100ms.
+- **`/api/healthz-smoke-{variant}`** (SPRINT-0003) — Variant-specific health check
+  endpoint for A/B testing, canary deployments, and version-specific monitoring.
+  Example: `/api/healthz-smoke-859005244` returns `{ ok: true, variant: "859005244" }`.
+  Simple direct JSON response (not wrapped in standard envelope); zero dependencies;
+  suitable for independent tracking of different deployment variants.
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +209,20 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+---
+
+## Changelog
+
+### SPRINT-0003 (2026-07-03)
+
+**Added:**
+- New variant health check endpoint: `GET /api/healthz-smoke-{variant}`
+  - Enables version-specific monitoring and canary deployment tracking
+  - Example variant: `/api/healthz-smoke-859005244` returning `{ ok: true, variant: "859005244" }`
+  - Simple direct JSON response (not wrapped in standard envelope)
+  - Zero dependencies; response time < 100ms
+  - Supports A/B testing and progressive rollout strategies
+
+**Changed:**
+- Clarified health check endpoints documentation; removed outdated sprint reference from `/api/healthz-smoke`
