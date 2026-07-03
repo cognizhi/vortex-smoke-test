@@ -1,0 +1,65 @@
+# Caddyfile — Wildcard subdomain reverse proxy for the booking platform
+#
+# Requirements:
+#   - Caddy v2.7+
+#   - A DNS provider with an ACME DNS-challenge plugin (Cloudflare shown below)
+#     Install: xcaddy build --with github.com/caddy-dns/cloudflare
+#   - Wildcard DNS A record:  *.platform.com  →  <server-IP>
+#   - Apex DNS A record:       platform.com   →  <server-IP>
+#
+# Environment variables (set before starting Caddy):
+#   CF_API_TOKEN   — Cloudflare API token with Zone:DNS:Edit permission
+#   PLATFORM_DOMAIN — domain root (default: platform.com)
+
+# ---------------------------------------------------------------------------
+# Wildcard subdomain handler — every {slug}.platform.com request
+# ---------------------------------------------------------------------------
+*.platform.com {
+  # Automatic HTTPS via Let's Encrypt DNS-01 challenge (wildcard requires DNS)
+  tls {
+    dns cloudflare {env.CF_API_TOKEN}
+  }
+
+  # Forward the original Host header so Next.js middleware can extract the slug
+  reverse_proxy localhost:3000 {
+    header_up Host {host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    # Strip any client-supplied X-Merchant-Slug to prevent header injection;
+    # the app derives the slug from the Host header, never from this header.
+    header_up -X-Merchant-Slug
+  }
+
+  # Caddy access log (optional — remove in high-traffic production)
+  log {
+    output file /var/log/caddy/access-subdomain.log {
+      roll_size 50mb
+      roll_keep 5
+    }
+  }
+}
+
+# ---------------------------------------------------------------------------
+# Apex domain handler — platform.com (marketing + registration)
+# ---------------------------------------------------------------------------
+platform.com {
+  tls {
+    dns cloudflare {env.CF_API_TOKEN}
+  }
+
+  reverse_proxy localhost:3000 {
+    header_up Host {host}
+    header_up X-Forwarded-For {remote_host}
+    header_up X-Forwarded-Proto {scheme}
+    # Strip any client-supplied X-Merchant-Slug to prevent header injection;
+    # the app derives the slug from the Host header, never from this header.
+    header_up -X-Merchant-Slug
+  }
+
+  log {
+    output file /var/log/caddy/access-apex.log {
+      roll_size 50mb
+      roll_keep 5
+    }
+  }
+}

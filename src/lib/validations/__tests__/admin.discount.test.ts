@@ -1,0 +1,671 @@
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
+import { createDiscountSchema, updateDiscountSchema } from '../admin';
+
+/**
+ * Test helpers for datetime calculations
+ */
+const getFutureDate = (days: number, hours = 0, minutes = 0): string => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  date.setHours(hours, minutes, 0, 0);
+  return date.toISOString().slice(0, 16); // "YYYY-MM-DDTHH:MM"
+};
+
+const getPastDate = (days: number, hours = 0, minutes = 0): string => {
+  const date = new Date();
+  date.setDate(date.getDate() - days);
+  date.setHours(hours, minutes, 0, 0);
+  return date.toISOString().slice(0, 16);
+};
+
+const getFutureISO = (days: number, hours = 0, minutes = 0): string => {
+  const date = new Date();
+  date.setDate(date.getDate() + days);
+  date.setHours(hours, minutes, 0, 0);
+  return date.toISOString().replace('Z', '').slice(0, 19) + 'Z'; // ISO 8601 with Z
+};
+
+describe('createDiscountSchema', () => {
+  describe('datetime-local transformation', () => {
+    it('TC-1.1: transforms valid datetime-local format to ISO 8601', async () => {
+      const startsAt = getFutureDate(5, 20, 13); // "2026-12-06T20:13"
+      const endsAt = getFutureDate(10, 23, 59);
+
+      const result = await createDiscountSchema.parseAsync({
+        code: 'SUMMER2026',
+        discountPercentage: 15,
+        startsAt,
+        endsAt,
+      });
+
+      // Verify transformation: should have :00Z added
+      expect(result.startsAt).toBe(startsAt + ':00Z');
+      expect(result.endsAt).toBe(endsAt + ':00Z');
+    });
+
+    it('TC-1.2: transforms datetime-local with early hour', async () => {
+      const startsAt = getFutureDate(5, 8, 0); // "2026-12-06T08:00"
+      const endsAt = getFutureDate(10, 23, 59);
+
+      const result = await createDiscountSchema.parseAsync({
+        code: 'EARLY',
+        discountPercentage: 10,
+        startsAt,
+        endsAt,
+      });
+
+      expect(result.startsAt).toBe(startsAt + ':00Z');
+    });
+
+    it('TC-1.3: rejects missing time separator (T)', async () => {
+      const invalidFormat = getFutureDate(5).replace('T', ' ');
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: invalidFormat,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-1.5: rejects empty string', async () => {
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: '',
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-1.7: rejects invalid day (month 13)', async () => {
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: '2026-13-06T20:13',
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-1.8: rejects invalid hour (25)', async () => {
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: `${getFutureDate(5).split('T')[0]}T25:13`,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-1.9: rejects invalid minute (61)', async () => {
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: `${getFutureDate(5).split('T')[0]}T20:61`,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('date range validation', () => {
+    it('TC-2.1: rejects past date', async () => {
+      const pastDate = getPastDate(5);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: pastDate,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.startsAt?.[0];
+        expect(error).toContain('past');
+      }
+    });
+
+    it('TC-2.2: rejects date 1 year ago', async () => {
+      const pastDate = getPastDate(365);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: pastDate,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-2.3: rejects current date/time', async () => {
+      const now = new Date();
+      const nowString = now.toISOString().slice(0, 16);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: nowString,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.startsAt?.[0];
+        expect(error).toContain('future');
+      }
+    });
+
+    it('TC-2.4: rejects date less than 1 day (6 hours)', async () => {
+      const soonDate = getFutureDate(0, 6, 0);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: soonDate,
+        endsAt,
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.startsAt?.[0];
+        expect(error).toContain('1 day');
+      }
+    });
+
+    it('TC-2.6: accepts date exactly 1 day in future', async () => {
+      const tomorrowExact = getFutureDate(1, 0, 0);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: tomorrowExact,
+        endsAt,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-2.7: accepts date 1 day + 1 minute in future', async () => {
+      const tomorrowPlus = getFutureDate(1, 0, 1);
+      const endsAt = getFutureDate(10);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: tomorrowPlus,
+        endsAt,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-2.8: accepts date well in future (30 days)', async () => {
+      const farFuture = getFutureDate(30);
+      const endsAt = getFutureDate(31);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: farFuture,
+        endsAt,
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('code field validation', () => {
+    it('TC-3.1: accepts valid code (alphanumeric, uppercase)', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'SUMMER2026',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(true);
+      if (result.success) {
+        expect(result.data.code).toBe('SUMMER2026');
+      }
+    });
+
+    it('TC-3.3: rejects code too short (2 chars)', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'AB',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.code?.[0];
+        expect(error).toContain('3 characters');
+      }
+    });
+
+    it('TC-3.4: rejects code too long (>50 chars)', async () => {
+      const longCode = 'A'.repeat(51);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: longCode,
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.code?.[0];
+        expect(error).toContain('50 characters');
+      }
+    });
+
+    it('TC-3.5: rejects code with lowercase letters', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'Summer2026',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.code?.[0];
+        expect(error).toContain('uppercase letters and numbers');
+      }
+    });
+
+    it('TC-3.6: rejects code with special characters', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'SUMMER-2026',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('discountPercentage field validation', () => {
+    it('TC-3.7: accepts 0% discount', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'FREE',
+        discountPercentage: 0,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-3.8: accepts 100% discount', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'FULLOFF',
+        discountPercentage: 100,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-3.9: rejects negative percentage', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: -5,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.discountPercentage?.[0];
+        expect(error).toContain('negative');
+      }
+    });
+
+    it('TC-3.10: rejects percentage > 100', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 150,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.discountPercentage?.[0];
+        expect(error).toContain('100%');
+      }
+    });
+
+    it('TC-3.11: rejects non-integer percentage', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15.5,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.discountPercentage?.[0];
+        expect(error).toContain('whole number');
+      }
+    });
+  });
+
+  describe('description field validation', () => {
+    it('accepts valid description', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'SUMMER',
+        discountPercentage: 15,
+        description: 'Summer promotion campaign',
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('allows empty description (optional)', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'SUMMER',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-3.12: rejects description > 200 chars', async () => {
+      const longDesc = 'A'.repeat(201);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        description: longDesc,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.description?.[0];
+        expect(error).toContain('200');
+      }
+    });
+  });
+
+  describe('date relationship validation', () => {
+    it('TC-3.16: rejects end date before start date', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: getFutureDate(10),
+        endsAt: getFutureDate(5),
+      });
+
+      expect(result.success).toBe(false);
+      if (!result.success) {
+        const error = result.error.flatten().fieldErrors.endsAt?.[0];
+        expect(error).toContain('after');
+      }
+    });
+
+    it('TC-3.17: accepts end date same as start date', async () => {
+      const sameDate = getFutureDate(5);
+
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: sameDate,
+        endsAt: sameDate,
+      });
+
+      expect(result.success).toBe(true);
+    });
+
+    it('TC-3.18: accepts end date well after start date', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(30),
+      });
+
+      expect(result.success).toBe(true);
+    });
+  });
+
+  describe('required fields', () => {
+    it('TC-3.20: missing code field', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-3.21: missing discountPercentage', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-3.22: missing startsAt', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-3.23: missing endsAt', async () => {
+      const result = await createDiscountSchema.safeParseAsync({
+        code: 'TEST',
+        discountPercentage: 15,
+        startsAt: getFutureDate(5),
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+
+  describe('full payload validation', () => {
+    it('TC-3.1: validates complete valid discount', async () => {
+      const result = await createDiscountSchema.parseAsync({
+        code: 'SUMMER2026',
+        discountPercentage: 15,
+        description: 'Summer promotion campaign',
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(30),
+      });
+
+      expect(result.code).toBe('SUMMER2026');
+      expect(result.discountPercentage).toBe(15);
+      expect(result.description).toBe('Summer promotion campaign');
+      expect(result.startsAt).toMatch(/Z$/); // ISO 8601 with Z
+      expect(result.endsAt).toMatch(/Z$/);
+    });
+
+    it('TC-3.2: validates minimal discount without description', async () => {
+      const result = await createDiscountSchema.parseAsync({
+        code: 'PROMO',
+        discountPercentage: 10,
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.code).toBe('PROMO');
+      expect(result.discountPercentage).toBe(10);
+      expect(result.description).toBeUndefined();
+    });
+  });
+});
+
+describe('updateDiscountSchema', () => {
+  describe('partial field updates', () => {
+    it('TC-4.1: update only code', async () => {
+      const result = await updateDiscountSchema.parseAsync({
+        code: 'UPDATED',
+      });
+
+      expect(result.code).toBe('UPDATED');
+      expect(result.discountPercentage).toBeUndefined();
+    });
+
+    it('TC-4.2: update only percentage', async () => {
+      const result = await updateDiscountSchema.parseAsync({
+        discountPercentage: 25,
+      });
+
+      expect(result.discountPercentage).toBe(25);
+      expect(result.code).toBeUndefined();
+    });
+
+    it('TC-4.3: update only description', async () => {
+      const result = await updateDiscountSchema.parseAsync({
+        description: 'New description',
+      });
+
+      expect(result.description).toBe('New description');
+    });
+
+    it('TC-4.4: update only dates', async () => {
+      const result = await updateDiscountSchema.parseAsync({
+        startsAt: getFutureDate(5),
+        endsAt: getFutureDate(10),
+      });
+
+      expect(result.startsAt).toBeDefined();
+      expect(result.endsAt).toBeDefined();
+      expect(result.code).toBeUndefined();
+    });
+
+    it('TC-4.5: update multiple fields', async () => {
+      const result = await updateDiscountSchema.parseAsync({
+        code: 'UPDATED',
+        discountPercentage: 20,
+        startsAt: getFutureDate(5),
+      });
+
+      expect(result.code).toBe('UPDATED');
+      expect(result.discountPercentage).toBe(20);
+      expect(result.startsAt).toBeDefined();
+      expect(result.endsAt).toBeUndefined();
+    });
+
+    it('TC-4.6: accepts empty update object', async () => {
+      const result = await updateDiscountSchema.parseAsync({});
+
+      expect(result).toEqual({});
+    });
+  });
+
+  describe('field validation in updates', () => {
+    it('TC-4.7: rejects invalid code in update', async () => {
+      const result = await updateDiscountSchema.safeParseAsync({
+        code: 'lowercase',
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-4.8: rejects percentage out of range in update', async () => {
+      const result = await updateDiscountSchema.safeParseAsync({
+        discountPercentage: 150,
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-4.9: rejects past date in update', async () => {
+      const result = await updateDiscountSchema.safeParseAsync({
+        startsAt: getPastDate(5),
+      });
+
+      expect(result.success).toBe(false);
+    });
+
+    it('TC-4.10: rejects end before start in update', async () => {
+      const result = await updateDiscountSchema.safeParseAsync({
+        startsAt: getFutureDate(10),
+        endsAt: getFutureDate(5),
+      });
+
+      expect(result.success).toBe(false);
+    });
+  });
+});
+
+describe('type inference', () => {
+  it('TC-5.1: CreateDiscountInput type is inferred correctly', async () => {
+    const input = {
+      code: 'TEST',
+      discountPercentage: 15,
+      description: 'Test discount',
+      startsAt: getFutureDate(5),
+      endsAt: getFutureDate(10),
+    };
+
+    const result = await createDiscountSchema.parseAsync(input);
+
+    // Verify types are inferred
+    const _code: string = result.code;
+    const _percentage: number = result.discountPercentage;
+    const _description: string | undefined = result.description;
+    const _startsAt: string = result.startsAt;
+    const _endsAt: string = result.endsAt;
+
+    expect(result).toBeDefined();
+  });
+
+  it('TC-5.2: UpdateDiscountInput type is inferred correctly', async () => {
+    const input = {
+      code: 'UPDATED',
+      discountPercentage: 25,
+    };
+
+    const result = await updateDiscountSchema.parseAsync(input);
+
+    const _code: string | undefined = result.code;
+    const _percentage: number | undefined = result.discountPercentage;
+
+    expect(result).toBeDefined();
+  });
+});
