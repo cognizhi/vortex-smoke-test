@@ -218,8 +218,7 @@ export function createMerchantSchema(schemaName: string) {
     {
       id: uuid('id').primaryKey().defaultRandom(),
       code: text('code').notNull(),
-      type: text('type', { enum: ['percentage', 'fixed_amount'] }).notNull(),
-      value: numeric('value', { precision: 10, scale: 2 }).notNull(),
+      discountPercentage: numeric('discount_percentage', { precision: 5, scale: 2 }).notNull(),
       description: text('description'),
       startsAt: timestamp('starts_at', { withTimezone: true }).notNull(),
       endsAt: timestamp('ends_at', { withTimezone: true }).notNull(),
