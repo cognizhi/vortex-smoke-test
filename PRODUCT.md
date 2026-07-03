@@ -91,16 +91,18 @@ needed to validate the token.
 **In scope (shipped):** merchant onboarding + schema provisioning, subdomain
 routing, admin panel (bookings, staff, services, customers, discounts, branding,
 design, settings, profile), public booking flow, signed cancel links,
-transactional email, rate-limited auth, dark mode.
+transactional email, rate-limited auth, dark mode, health check endpoints.
 
 **Out of scope (post-MVP):** embeddable widgets, custom domains, payment
 capture at booking, two-way calendar sync (Google/Outlook), native mobile apps,
-SMS, waitlists, mandatory email verification, customer self-reschedule.
+SMS, waitlists, mandatory email verification, customer self-reschedule, extended
+health probes (database connectivity, schema version, queue depth).
 
 ## 6. Success metrics
 
 - **Launch:** 100% acceptance criteria pass; zero critical security findings;
-  booking page loads < 2 s (p95); email delivery > 95%.
+  booking page loads < 2 s (p95); email delivery > 95%; health check endpoints
+  respond < 100ms (typical < 10ms).
 - **Adoption:** signup-to-live < 10 min; customer booking completion > 85%;
   admin modification rate < 15%.
 
@@ -112,76 +114,17 @@ SMS, waitlists, mandatory email verification, customer self-reschedule.
 
 ---
 
-# SPRINT-0033: Healthz-smoke Endpoint
+## 8. Operations & Monitoring
 
-**Sprint Goal:** Add a lightweight health check endpoint for monitoring and load balancer integration.
+### Health Check Endpoints
 
-## Feature: GET /api/healthz-smoke
+The platform provides lightweight health check endpoints for monitoring, load balancers,
+and orchestration systems.
 
-### Problem & Motivation
+#### GET /api/healthz-smoke — Standard Health Check
 
-Production deployments require fast, lightweight health check endpoints for:
-- **Load balancers** — HTTP-level readiness probes
-- **Monitoring systems** — Prometheus, Datadog, New Relic scraping
-- **Orchestration** — Kubernetes liveness/readiness gates
-- **Incident response** — Quick platform status verification
-
-Current `/api/health` endpoint includes timestamps and additional metadata. We need a minimal **smoke test** endpoint that:
-- Returns instantly (< 10ms)
-- Requires zero dependencies (no database, auth, or external calls)
-- Returns a single boolean: `ok: true`
-- Supports integration with external monitoring without overhead
-
-### Acceptance Criteria
-
-✅ **Endpoint exists and responds**
-- GET `/api/healthz-smoke` responds with HTTP 200
-- Response body: `{ "data": { "ok": true }, "error": null }`
-- Content-Type: `application/json`
-
-✅ **Self-contained (no dependencies)**
-- No database queries
-- No authentication/authorization checks
-- No external service calls
-- No environment variable lookups (should work in any environment)
-
-✅ **Performance**
-- Response time < 100ms (typical < 10ms)
-- No blocking operations
-- Suitable for frequent polling by load balancers
-
-✅ **API consistency**
-- Follows existing envelope pattern: `{ data: T, error: null | {code, message} }`
-- Uses Next.js App Router convention: `src/app/api/healthz-smoke/route.ts`
-- Includes JSDoc header documenting the endpoint
-
-✅ **Code quality**
-- TypeScript: strict type safety, zero implicit `any`
-- Linting: `npm run lint` passes with zero warnings
-- Type checking: `npm run typecheck` passes
-- Testing: comprehensive test coverage with Vitest
-  - Test successful 200 response with correct JSON shape
-  - Test no authentication required
-  - Test response time
-- Manual verification: endpoint responds correctly when server is running
-
-### What's In Scope
-
-- Single GET endpoint only
-- Minimal JSON response: `{ ok: true }`
-- No database connection or schema checks
-- No monitoring/alerting integration (just the endpoint)
-
-### What's Out of Scope (Future Sprints)
-
-- Extended health checks (database connectivity, schema version, queue depth)
-- Metrics export (Prometheus format)
-- Custom headers (X-Revision, X-Build-Date)
-- Multi-probe support (readiness vs. liveness)
-- Circuit breaker behavior (503 status on failure)
-- Load balancer-specific formats (gRPC health checks, custom protocols)
-
-### Technical Requirements
+**Purpose:** General platform health status for load balancers, monitoring systems
+(Prometheus, Datadog, New Relic), and Kubernetes readiness probes.
 
 **Endpoint Specification**
 - **Path:** `GET /api/healthz-smoke`
@@ -194,28 +137,76 @@ Current `/api/health` endpoint includes timestamps and additional metadata. We n
     "error": null
   }
   ```
+- **Response Time:** < 100ms (typical < 10ms)
 
-**Implementation Pattern**
-- Location: `src/app/api/healthz-smoke/route.ts`
-- Use Next.js `NextResponse.json()` API
-- Follow response envelope convention from existing endpoints
-- Include JSDoc header with endpoint description and response codes
+**Characteristics**
+- Self-contained (no database, auth, or external calls)
+- Follows standard API response envelope pattern
+- No dependencies; works in any environment
+- Suitable for frequent polling by load balancers
 
-**Testing Coverage**
-- Unit test: response status and JSON structure
-- Unit test: no authentication required
-- Unit test: response time validation
-- Integration test: end-to-end with dev server
-- Manual test: `curl http://localhost:3000/api/healthz-smoke`
+#### GET /api/healthz-smoke-{variant} — Variant Health Check
+
+**Purpose:** Variant-specific health check endpoints for A/B testing, canary deployments,
+and version-specific monitoring. Allows independent tracking of different deployment
+variants.
+
+**Endpoint Specification**
+- **Path:** `GET /api/healthz-smoke-{variant}` (e.g., `/api/healthz-smoke-859005244`)
+- **Authentication:** None (public)
+- **Response Status:** 200 on success
+- **Response Body:**
+  ```json
+  {
+    "ok": true,
+    "variant": "{variant}"
+  }
+  ```
+  Example: `{ "ok": true, "variant": "859005244" }`
+- **Response Time:** < 100ms (typical < 10ms)
+
+**Characteristics**
+- Self-contained (no database, auth, or external calls)
+- Simple direct JSON response (not wrapped in envelope)
+- No dependencies; works in any environment
+- Variant ID is hardcoded in the response for identification
+- Suitable for monitoring specific deployment versions independently
+
+**Supported Variants (Current)**
+- `/api/healthz-smoke-859005244` — Primary variant endpoint
 
 ---
 
-## Decomposition: EPIC → STORY → TASK
+## Decomposition: EPIC → FEATURE → TASK
 
-| Ticket | Type | Title | Parent | Idea | Notes |
-|--------|------|-------|--------|------|-------|
-| BKNG-0141 | EPIC | Healthz-smoke endpoint | — | BA-0030 | Sprint container |
-| BKNG-0142 | STORY | Implement GET /api/healthz-smoke endpoint | BKNG-0141 | — | Feature specification |
-| BKNG-0143 | TASK | Implement healthz-smoke endpoint with tests | BKNG-0142 | — | Development work |
+Health check endpoints are decomposed as follows:
 
-Each ticket includes full acceptance criteria matching this PRODUCT.md.
+| Ticket | Type | Title | Parent | Sprint |
+|--------|------|-------|--------|--------|
+| VRTX-0013 | EPIC | Add /healthz-smoke-859005244 variant endpoint | — | SPRINT-0003 |
+| VRTX-0014 | FEATURE | Implement /healthz-smoke-859005244 endpoint | VRTX-0013 | SPRINT-0003 |
+| VRTX-0015 | TASK | Create /healthz-smoke-859005244 route handler | VRTX-0014 | SPRINT-0003 |
+
+Each ticket's acceptance criteria are aligned with this PRODUCT.md specification.
+
+---
+
+## Changelog
+
+### SPRINT-0003 (2026-07-03)
+
+**Added:**
+- New variant health check endpoint: `GET /api/healthz-smoke-{variant}`
+  - Initial variant: `/api/healthz-smoke-859005244`
+  - Returns: `{ ok: true, variant: "859005244" }`
+  - Use case: Version-specific monitoring and canary deployment tracking
+  - Complements existing `/api/healthz-smoke` standard health check endpoint
+
+**Changed:**
+- Updated "Scope" section to explicitly include health check endpoints in shipped features
+- Enhanced success metrics to include health check response time requirement (< 100ms)
+
+**Notes:**
+- No breaking changes to existing endpoints
+- Variant endpoints provide independent monitoring for deployment variants
+- Supports A/B testing and progressive rollout strategies
