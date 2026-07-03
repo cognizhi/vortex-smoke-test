@@ -9,8 +9,7 @@ export type DiscountStatus = 'active' | 'expired' | 'inactive';
 export interface Discount {
   id: string;
   code: string;
-  type: DiscountType;
-  value: number;
+  discountPercentage: number;
   description?: string | null;
   startsAt: Date;
   endsAt: Date;
@@ -36,14 +35,14 @@ export interface DiscountListResponse {
 }
 
 /**
- * Determine discount status based on expiration date and active flag
+ * Determine discount status based on end date and active flag
  */
 export function getDiscountStatus(discount: Discount): DiscountStatus {
   if (!discount.isActive) {
     return 'inactive';
   }
 
-  if (discount.expirationDate && new Date(discount.expirationDate) < new Date()) {
+  if (discount.endsAt && new Date(discount.endsAt) < new Date()) {
     return 'expired';
   }
 
@@ -51,17 +50,8 @@ export function getDiscountStatus(discount: Discount): DiscountStatus {
 }
 
 /**
- * Format discount value based on type
+ * Format discount value (percentage-only)
  */
-export function formatDiscountValue(value: number, type: DiscountType): string {
-  switch (type) {
-    case 'percentage':
-      return `${value}%`;
-    case 'fixed_amount':
-      return `$${value.toFixed(2)}`;
-    case 'free_shipping':
-      return 'Free Shipping';
-    default:
-      return value.toString();
-  }
+export function formatDiscountValue(percentage: number): string {
+  return `${percentage}%`;
 }
