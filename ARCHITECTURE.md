@@ -95,7 +95,8 @@ src/
 │   ├── site/[slug]/         # Public booking page + BookingFlow + cancel pages
 │   │   └── api/             # Slug-scoped booking/slots/confirm/cancel handlers
 │   └── api/                 # Platform APIs: auth/*, admin/*, booking/*, cancel/*,
-│                            #   check-slug, health, healthz-smoke, avatars/[filename]
+│                            #   check-slug, health, healthz-smoke, healthz-smoke-{variant},
+│                            #   avatars/[filename]
 ├── components/
 │   ├── ui/                  # button, card, theme-toggle (shadcn/ui-style)
 │   ├── layout/              # header, user-profile
@@ -158,6 +159,13 @@ store in prod); served back through `/api/avatars/[filename]`.
   load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
   with zero dependencies (no database, auth, or external service calls). Designed
   for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke-{variant}`** (SPRINT-0005) — Variant-specific health check
+  endpoints for distributed deployment and A/B testing scenarios. Each endpoint
+  (e.g., `/api/healthz-smoke-547016860`) returns `{ ok: true, variant: "{variant}" }`
+  with zero dependencies. Allows monitoring systems to verify specific code paths,
+  support canary/blue-green deployments, track build variants, and validate feature
+  flags independently. Response time < 100ms. Each variant is a separate route file
+  enabling independent deployment and updates.
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +212,27 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+## 10. Changelog
+
+### 2026-07-03 — SPRINT-0005: Variant smoke test endpoint pattern
+
+**Added**
+- **Variant smoke test endpoint pattern** `/api/healthz-smoke-{variant}` for distributed
+  deployments and A/B testing scenarios
+  - Standardizes variant-specific health check endpoints across the platform
+  - First variant implementation: `/api/healthz-smoke-547016860`
+  - Each variant endpoint returns `{ ok: true, variant: "{variant}" }` with zero dependencies
+  - Enables monitoring systems to verify specific code paths and deployment variants
+  - Supports canary/blue-green deployments with independent health tracking per variant
+  - Allows external monitoring to track build variants and validate feature flags
+  - Each variant is a separate route file (`src/app/api/healthz-smoke-{variant}/route.ts`)
+    enabling independent deployment and updates
+  - Target response time < 100ms (typical < 10ms)
+
+**Design decisions**
+- Variant identifier is hardcoded per endpoint, not dynamically derived from environment
+- Each variant is an independent route file rather than a centralized endpoint with
+  dynamic routing, enabling independent deployment
+- Response structure follows base `/api/healthz-smoke` pattern but without error envelope
+- Public endpoints requiring no authentication for monitoring system accessibility

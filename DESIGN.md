@@ -127,3 +127,13 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+## 7. Changelog
+
+### 2026-07-03 — SPRINT-0005: Variant smoke test endpoint pattern
+
+**Added**
+- Documentation of variant smoke test endpoint pattern for monitoring and deployment verification
+  - Variant endpoints follow the same lightweight, dependency-free design as base health checks
+  - Each variant is independently deployable as a separate route file
+  - No design token or UI changes required for variant endpoints (infrastructure-level feature)
