@@ -127,3 +127,13 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+---
+
+## Changelog
+
+### SPRINT-0003 (2026-07-03)
+
+**No visual design changes.**
+- Health check endpoints are internal infrastructure only; no customer-facing UI changes
+- Variant health check endpoint (`/api/healthz-smoke-{variant}`) does not affect the platform design system or public booking page theming
