@@ -127,3 +127,11 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+## 7. Changelog
+
+### SPRINT-0002 (2026-07-03)
+
+**No design changes:** SPRINT-0002 focused on adding a non-UI health check endpoint
+(`GET /healthz-smoke-908186049`). No changes to design tokens, theming, components,
+or visual surfaces.

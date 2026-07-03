@@ -95,7 +95,7 @@ src/
 │   ├── site/[slug]/         # Public booking page + BookingFlow + cancel pages
 │   │   └── api/             # Slug-scoped booking/slots/confirm/cancel handlers
 │   └── api/                 # Platform APIs: auth/*, admin/*, booking/*, cancel/*,
-│                            #   check-slug, health, healthz-smoke, avatars/[filename]
+│                            #   check-slug, health, healthz-smoke-908186049, avatars/[filename]
 ├── components/
 │   ├── ui/                  # button, card, theme-toggle (shadcn/ui-style)
 │   ├── layout/              # header, user-profile
@@ -154,10 +154,10 @@ store in prod); served back through `/api/avatars/[filename]`.
 ### Health check endpoints
 - **`/api/health`** — Basic health check returning `{ status, timestamp }`. Used
   for general monitoring and deployment health probes.
-- **`/api/healthz-smoke`** (SPRINT-0033) — Lightweight, stateless smoke test for
-  load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
-  with zero dependencies (no database, auth, or external service calls). Designed
-  for frequent polling with response time < 100ms.
+- **`/healthz-smoke-908186049`** (SPRINT-0002) — Lightweight, stateless smoke test for
+  load balancers, variant testing, and monitoring systems. Returns
+  `{ ok: true, variant: "908186049" }` with zero dependencies (no database, auth,
+  or external service calls). Designed for frequent polling with response time < 10ms.
 
 ## 6. Data flow (a booking)
 
@@ -204,3 +204,21 @@ runtime-only secrets (no requests are served during static analysis).
   status change (`evictMerchantDbCache`).
 - **Server Components by default** — minimal client JS; Client Components are
   small and marked `"use client"`.
+
+## 10. Changelog
+
+### SPRINT-0002 (2026-07-03)
+
+**Added:**
+- Health check endpoint: `GET /healthz-smoke-908186049` for variant testing and
+  smoke test verification. Returns `{ ok: true, variant: "908186049" }` with zero
+  dependencies (no database, authentication, or external calls).
+- Response time target < 10ms, suitable for frequent polling by load balancers and
+  monitoring systems.
+- Implementation at `src/app/api/healthz-smoke-908186049/route.ts`.
+
+**Updated:**
+- Section 5 (Core subsystems): documented new health check endpoint with correct
+  response format.
+- Directory layout (Section 4): updated API route listing to reflect
+  `healthz-smoke-908186049` endpoint.
