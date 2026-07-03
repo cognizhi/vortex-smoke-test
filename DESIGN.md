@@ -127,3 +127,15 @@ Branding**.
 - New shared UI goes in `components/ui/` following the shadcn/ui pattern; compose
   variants with `class-variance-authority`, merge classes with `cn()`.
 - Respect `prefers-reduced-motion` for any animation.
+
+## 7. Changelog
+
+### 2026-07-03 — SPRINT-0004
+
+**Added**
+- **Variant smoke test endpoint** `/api/healthz-smoke-518124667` for canary deployments
+  and monitoring workflows (architectural, no visual design changes)
+
+### Historical Changelog
+
+**SPRINT-0033** added `/api/healthz-smoke` lightweight health check endpoint.
