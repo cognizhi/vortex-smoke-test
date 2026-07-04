@@ -343,8 +343,9 @@ Body: {"ok":true,"variant":"887203910"} ✅
 ---
 
 **QA Report Completed:** 2026-07-04  
-**Re-Verification:** 2026-07-04 (VRTX-0078) - Confirmed defects still present, VRTX-0077 unfixed, sprint remains blocked in SPRINT_REWORK
-**Next Steps:** File DEFECT-001 ticket and transition sprint to rework phase.
+**Re-Verification 1:** 2026-07-04 (VRTX-0078) - Confirmed defects still present, VRTX-0077 unfixed, sprint remains blocked in SPRINT_REWORK
+**Re-Verification 2:** 2026-07-04 (VRTX-0079) - VRTX-0077 defect STILL UNFIXED; rework cycle 3
+**Next Steps:** Escalation needed - rework cycle threshold reached
 
 ---
 
@@ -357,4 +358,25 @@ Body: {"ok":true,"variant":"887203910"} ✅
 
 **Sprint Status:** SPRINT_REWORK (rework cycle 2)
 **Verdict:** Endpoints are production-ready; test suite must be remediated before closure.
+
+---
+
+## Re-Verification Note (VRTX-0079)
+
+**Date:** 2026-07-04  
+**Cycle:** Rework Cycle 3 (ESCALATION)
+**Finding:** **DEFECT VRTX-0077 REMAINS UNFIXED** - No engineer action taken. Test failures still present:
+- VRTX-0074: 12/14 tests pass; 2 fail on Content-Type header assertion (line 97, 166)
+- VRTX-0075: 12/14 tests pass; 2 fail on Content-Type header assertion (line 97, 166)
+
+**Status:** Defect not addressed across 2 prior rework cycles. **ESCALATION RECOMMENDED** - Manual intervention required.
+
+**Issue Summary:**
+- **Root Cause:** Test assertions check for exact `"application/json"` but endpoint correctly returns `"application/json;charset=utf-8"` per RFC 7231
+- **Impact:** 4 test failures (2 per endpoint) block sprint closure despite endpoints being functionally correct
+- **Required Fix:** Change `.toBe('application/json')` to `.toContain('application/json')` in 4 test assertion locations
+- **Estimated Effort:** 5 minutes
+- **Priority:** High - blocking sprint closure
+
+**Endpoints:** Both are production-ready with correct HTTP 200 responses and proper JSON bodies. Only test suite quality needs fixing.
 
