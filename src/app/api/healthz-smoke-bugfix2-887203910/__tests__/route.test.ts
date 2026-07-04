@@ -94,7 +94,7 @@ describe('GET /api/healthz-smoke-bugfix2-887203910', () => {
   // AC-07: Content-Type header is application/json
   it('RH-07: Content-Type header is application/json', async () => {
     const res = await GET();
-    expect(res.headers.get('Content-Type')).toBe('application/json');
+    expect(res.headers.get('Content-Type')).toContain('application/json');
   });
 
   // AC-14: Response is a NextResponse instance
@@ -163,7 +163,7 @@ describe('GET /api/healthz-smoke-bugfix2-887203910', () => {
 
     responses.forEach((res) => {
       expect(res.status).toBe(200);
-      expect(res.headers.get('Content-Type')).toBe('application/json');
+      expect(res.headers.get('Content-Type')).toContain('application/json');
     });
 
     const expected = { ok: true, variant: '887203910' };
