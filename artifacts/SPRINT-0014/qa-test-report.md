@@ -343,5 +343,18 @@ Body: {"ok":true,"variant":"887203910"} ✅
 ---
 
 **QA Report Completed:** 2026-07-04  
+**Re-Verification:** 2026-07-04 (VRTX-0078) - Confirmed defects still present, VRTX-0077 unfixed, sprint remains blocked in SPRINT_REWORK
 **Next Steps:** File DEFECT-001 ticket and transition sprint to rework phase.
+
+---
+
+## Re-Verification Note (VRTX-0078)
+
+**Date:** 2026-07-04  
+**Finding:** Same defects persist. VRTX-0077 ("Fix overly strict Content-Type header assertions in unit tests") has not been fixed by the engineer. Test failures remain identical:
+- VRTX-0074: 12/14 tests pass; 2 fail on Content-Type header assertion
+- VRTX-0075: 12/14 tests pass; 2 fail on Content-Type header assertion
+
+**Sprint Status:** SPRINT_REWORK (rework cycle 2)
+**Verdict:** Endpoints are production-ready; test suite must be remediated before closure.
 
