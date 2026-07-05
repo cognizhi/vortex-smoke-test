@@ -26,7 +26,6 @@ import type { BookingFlowProps } from './BookingFlow';
 
 // Constants for defaults
 const DEFAULT_SITE_NAME = 'SimplyBook';
-const DEFAULT_AVATAR_URL = '/logo.svg';
 
 // Singleton pool for this module (Next.js module cache)
 let _pool: Pool | null = null;
@@ -138,7 +137,6 @@ export default async function BookingPage({ params }: PageParams): Promise<React
 
   const props: BookingFlowProps = {
     slug,
-    businessName: merchant.businessName,
     customSiteName: brandingRow?.siteName ?? null,
     customAvatarUrl: brandingRow?.avatarUrl ?? null,
     staff: staffRows,

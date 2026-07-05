@@ -1,7 +1,7 @@
 'use client'
 
 import { useState } from 'react'
-import { Plus, Edit, Trash2, ToggleLeft, ToggleRight, Calendar, Tag } from 'lucide-react'
+import { Plus, Trash2, ToggleLeft, ToggleRight, Calendar, Tag } from 'lucide-react'
 import { useDiscounts } from '@/hooks/useAdminData'
 import CreateDiscountForm from '@/components/admin/CreateDiscountForm'
 import type { Discount } from '@/types/admin'

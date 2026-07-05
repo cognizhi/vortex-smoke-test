@@ -45,7 +45,6 @@ export interface MerchantDesign {
 
 export interface BookingFlowProps {
   slug: string;
-  businessName: string;
   customSiteName?: string | null;
   customAvatarUrl?: string | null;
   staff: StaffMember[];
@@ -416,7 +415,6 @@ const DEFAULT_AVATAR_URL = '/logo.svg';
 
 export default function BookingFlow({
   slug,
-  businessName,
   customSiteName,
   customAvatarUrl,
   staff,
