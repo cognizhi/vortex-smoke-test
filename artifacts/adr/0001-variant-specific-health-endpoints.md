@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (SPRINT-0005+, continuing through SPRINT-0015)
+Accepted (SPRINT-0005+, continuing through SPRINT-0019)
 
 ## Context
 
@@ -87,7 +87,10 @@ export async function GET(req, { params }) {
 ## Implementation
 
 - **Location:** `src/app/api/healthz-smoke-{variant}/route.ts`
-- **Pattern:** Each variant is a separate file with hardcoded variant ID
+- **Pattern:** Each variant is a separate file with hardcoded variant ID. Variant IDs are reflected both in the route path and in the response body's `variant` field.
+- **Variant ID strategies:** 
+  - **Numeric identifiers** (e.g., `547016860`, `305070125`) — generic deployment variants
+  - **Semantic identifiers** (e.g., `cancel-309388299`, introduced in SPRINT-0019) — variant with contextual naming for specific feature or deployment strategy
 - **Tests:** Unit tests verify response structure, performance, and that endpoint requires no dependencies
 - **Monitoring:** Each variant is independently monitored; missing response indicates deployment issue
 
@@ -124,6 +127,7 @@ export async function GET(req, { params }) {
 - **SPRINT-0009:** Addition of variant `48842051`
 - **SPRINT-0013:** Addition of variant `110428092`
 - **SPRINT-0015:** Addition of variant `305070125`
+- **SPRINT-0019:** Addition of variant `309388299` with variant-specific path naming (`/api/healthz-smoke-cancel-309388299`)
 
 ## Future considerations
 

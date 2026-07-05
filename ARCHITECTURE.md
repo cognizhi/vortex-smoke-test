@@ -158,14 +158,20 @@ store in prod); served back through `/api/avatars/[filename]`.
   load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
   with zero dependencies (no database, auth, or external service calls). Designed
   for frequent polling with response time < 100ms.
-- **`/api/healthz-smoke-{variant}`** (SPRINT-0005+) — Variant-specific health check
-  endpoints for deployment verification and A/B testing. Each endpoint returns
-  `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
-  systems to verify specific application variants are deployed and reachable. Current
-  variants: `309388299` (SPRINT-0019), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013), 
-  `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006), 
-  `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002), 
-  `908186049` (SPRINT-0001).
+- **Variant-specific health check endpoints** (SPRINT-0005+) — For deployment
+  verification and A/B testing. Each endpoint returns `{ ok: true, variant: "{variant-id}" }`
+  with zero dependencies. Used by monitoring systems to verify specific application
+  variants are deployed and reachable. Endpoints follow the pattern `/api/healthz-smoke-{identifier}`:
+  - `/api/healthz-smoke-908186049` (SPRINT-0001)
+  - `/api/healthz-smoke-859005244` (SPRINT-0002)
+  - `/api/healthz-smoke-518124667` (SPRINT-0003)
+  - `/api/healthz-smoke-547016860` (SPRINT-0005)
+  - `/api/healthz-smoke-423911289` (SPRINT-0006)
+  - `/api/healthz-smoke-963602537` (SPRINT-0007)
+  - `/api/healthz-smoke-48842051` (SPRINT-0009)
+  - `/api/healthz-smoke-110428092` (SPRINT-0013)
+  - `/api/healthz-smoke-305070125` (SPRINT-0015)
+  - `/api/healthz-smoke-cancel-309388299` (SPRINT-0019)
 
 ## 6. Data flow (a booking)
 
