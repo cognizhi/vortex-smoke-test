@@ -134,8 +134,124 @@ Current deployed variants:
 - `/api/healthz-smoke-48842051` — Returns `{ ok: true, variant: "48842051" }` (SPRINT-0009)
 - `/api/healthz-smoke-110428092` — Returns `{ ok: true, variant: "110428092" }` (SPRINT-0013)
 - `/api/healthz-smoke-305070125` — Returns `{ ok: true, variant: "305070125" }` (SPRINT-0015)
+- `/api/healthz-smoke-cancel-1072853191` — Returns `{ ok: true, variant: "1072853191" }` (SPRINT-0017)
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
+
+---
+
+# SPRINT-0017: Variant smoke test endpoint (1072853191)
+
+**Sprint Goal:** Add a lightweight variant-specific smoke test endpoint for deployment verification.
+
+## Feature: GET /healthz-smoke-cancel-1072853191
+
+### Problem & Motivation
+
+Distributed deployments require the ability to verify that specific application variants are active and reachable. Variant-specific health check endpoints allow monitoring systems to:
+- Verify specific code path deployments are live
+- Support canary deployments and A/B testing scenarios
+- Enable targeted load balancer routing based on variant
+- Provide deployment confidence during progressive rollouts
+
+This endpoint follows the established pattern from previous variant endpoints (SPRINT-0001 through SPRINT-0016) to maintain consistency and operational familiarity.
+
+### Acceptance Criteria
+
+✅ **Endpoint exists and responds**
+- GET `/healthz-smoke-cancel-1072853191` responds with HTTP 200
+- Response body: `{ data: { ok: true, variant: "1072853191" }, error: null }`
+- Content-Type: `application/json`
+
+✅ **Self-contained (no dependencies)**
+- No database queries
+- No authentication/authorization checks
+- No external service calls
+- No environment variable lookups (self-contained)
+
+✅ **Performance**
+- Response time < 100ms (typical < 10ms)
+- No blocking operations
+- Suitable for frequent polling by monitoring systems
+
+✅ **Consistency**
+- Follows the same implementation pattern as other variant endpoints
+- Uses Next.js App Router convention: `src/app/api/healthz-smoke-cancel-1072853191/route.ts`
+- Variant identifier "1072853191" is hardcoded in the response
+- Public endpoint, no authentication required
+
+✅ **Code quality**
+- TypeScript: strict type safety, zero implicit `any`
+- Linting: `npm run lint` passes with zero warnings
+- Type checking: `npm run typecheck` passes
+- Testing: comprehensive test coverage with Vitest
+  - Response status and JSON structure validation
+  - Variant field correctness
+  - No authentication requirement verification
+  - Response time performance verification
+  - Consistency under repeated calls
+
+### What's In Scope
+
+- Single GET endpoint for variant "1072853191"
+- Response includes `ok: true` and variant identifier
+- Standard API response envelope: `{ data: {...}, error: null }`
+- No dependencies on database, configuration, or external services
+- Comprehensive unit tests with edge case coverage
+
+### What's Out of Scope (Future Sprints)
+
+- Dynamic variant detection from environment variables
+- Variant registry or metadata endpoint
+- Multiple variants returned in a single response
+- Variant-specific feature detection
+
+### Technical Requirements
+
+**Endpoint Specification**
+- **Path:** `GET /healthz-smoke-cancel-1072853191`
+- **Authentication:** None (public)
+- **Response Status:** 200 on success
+- **Response Body:**
+  ```json
+  {
+    "data": {
+      "ok": true,
+      "variant": "1072853191"
+    },
+    "error": null
+  }
+  ```
+- **Content-Type:** `application/json`
+
+**Implementation Pattern**
+- Location: `src/app/api/healthz-smoke-cancel-1072853191/route.ts`
+- Export async `GET` handler function
+- Use Next.js `NextResponse.json()` API
+- Response structure: `{ data: { ok: true, variant: "1072853191" }, error: null }`
+- Include JSDoc header documenting the endpoint
+- No guards, middleware, or conditional logic needed
+
+**Test Coverage**
+- Unit test file: `src/app/api/healthz-smoke-cancel-1072853191/__tests__/route.test.ts`
+- Tests should verify:
+  - HTTP 200 status code
+  - Exact response body: `{ data: { ok: true, variant: "1072853191" }, error: null }`
+  - Content-Type header is `application/json`
+  - No authentication required
+  - Response time < 100ms
+  - Consistency under repeated calls
+  - Type safety (ok is boolean true, variant is string "1072853191")
+  - No extra fields in response
+
+### Decomposition: EPIC → TASK
+
+| Ticket | Type | Title | Parent | Idea | Notes |
+|--------|------|-------|--------|------|-------|
+| VRTX-0093 | EPIC | Add /healthz-smoke-cancel-1072853191 endpoint | — | VST-0012 | Sprint container |
+| VRTX-0094 | TASK | Implement /healthz-smoke-cancel-1072853191 endpoint | VRTX-0093 | — | Development work |
+
+Each ticket includes full acceptance criteria matching this PRODUCT.md.
 
 ---
 
@@ -710,6 +826,22 @@ Each ticket includes full acceptance criteria matching this PRODUCT.md.
 ---
 
 ## Changelog
+
+### 2026-07-05 — SPRINT-0017: Variant smoke test endpoint (1072853191)
+
+**Added:**
+- New variant-specific health check endpoint `/healthz-smoke-cancel-1072853191`
+- Returns `{ data: { ok: true, variant: "1072853191" }, error: null }` with zero dependencies
+- Public endpoint accessible for monitoring and load balancer integration
+- Comprehensive unit tests covering status, response shape, and consistency
+- Listed in health check endpoints inventory
+
+**Implementation details:**
+- Pattern follows established variant endpoint model from SPRINT-0001 through SPRINT-0016
+- Lightweight, dependency-free response (no database, auth, or external calls)
+- Target response time < 100ms (typical < 10ms)
+- Hardcoded variant identifier for deployment verification
+- Follows standard API response envelope pattern
 
 ### 2026-07-05 — SPRINT-0015: Variant smoke test endpoint (305070125)
 
