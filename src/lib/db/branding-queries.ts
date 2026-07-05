@@ -4,7 +4,6 @@
  * Handles upsert operations with proper partial update support using
  * the conditional object building pattern (no undefined values to Drizzle).
  */
-import { eq } from 'drizzle-orm';
 import type { NodePgDatabase } from 'drizzle-orm/node-postgres';
 import type { MerchantSchemaType } from './merchant-schema';
 

@@ -1,6 +1,6 @@
 'use client'
 
-import { useEffect, useState } from 'react'
+import { useState } from 'react'
 import { useForm } from 'react-hook-form'
 import { zodResolver } from '@hookform/resolvers/zod'
 import { X, Save, Loader2, AlertCircle } from 'lucide-react'
@@ -12,13 +12,11 @@ interface CreateDiscountFormProps {
 }
 
 export default function CreateDiscountForm({ onClose, onSuccess }: CreateDiscountFormProps) {
-  const [submitError, setSubmitError] = useState<string | null>(null)
   const [toastMessage, setToastMessage] = useState<{ message: string; type: 'success' | 'error' } | null>(null)
 
   const {
     register,
     handleSubmit,
-    setValue,
     watch,
     formState: { errors, isSubmitting },
   } = useForm<CreateDiscountInput>({
@@ -29,7 +27,6 @@ export default function CreateDiscountForm({ onClose, onSuccess }: CreateDiscoun
   const type = watch('type')
 
   const onSubmit = async (data: CreateDiscountInput) => {
-    setSubmitError(null)
     try {
       const res = await fetch('/api/admin/discounts', {
         method: 'POST',
@@ -47,16 +44,12 @@ export default function CreateDiscountForm({ onClose, onSuccess }: CreateDiscoun
           onSuccess()
         }, 500)
       } else if (res.status === 409) {
-        setSubmitError('Discount code already exists')
         setToastMessage({ message: 'Discount code already exists', type: 'error' })
       } else {
         const errorMessage = responseData.error?.message || 'Failed to create discount'
-        setSubmitError(errorMessage)
         setToastMessage({ message: `Failed: ${errorMessage}`, type: 'error' })
       }
     } catch (err) {
-      const errorMessage = err instanceof Error ? err.message : 'Network error'
-      setSubmitError(errorMessage)
       setToastMessage({ message: 'Failed to create discount', type: 'error' })
     }
   }
