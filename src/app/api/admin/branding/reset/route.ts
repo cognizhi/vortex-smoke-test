@@ -44,7 +44,7 @@ interface ApiResponse<T> {
 }
 
 // Helper: Get authenticated session
-async function getSession(request: NextRequest) {
+async function getSession() {
   // TODO: Implement session retrieval
   return {
     user: {
@@ -59,7 +59,7 @@ async function getSession(request: NextRequest) {
 export async function PUT(request: NextRequest): Promise<NextResponse<ApiResponse<BrandingResponse>>> {
   try {
     // 1. Check authentication
-    const session = await getSession(request);
+    const session = await getSession();
     if (!session || !session.user) {
       return NextResponse.json(
         { success: false, error: 'Unauthorized' },

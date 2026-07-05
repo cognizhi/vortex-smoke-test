@@ -249,5 +249,5 @@ export function createMerchantSchema(schemaName: string) {
 
 export type MerchantSchemaType = ReturnType<typeof createMerchantSchema>;
 
-export type Discount = typeof discounts.$inferSelect;
-export type InsertDiscount = typeof discounts.$inferInsert;
+export type Discount = MerchantSchemaType['discounts']['$inferSelect'];
+export type InsertDiscount = MerchantSchemaType['discounts']['$inferInsert'];
