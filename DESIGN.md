@@ -132,6 +132,10 @@ Branding**.
 
 ## Changelog
 
+### 2026-07-05 — SPRINT-0021: Variant smoke test endpoint (no design changes)
+
+This sprint focused on adding deployment verification infrastructure. No changes to the design system, platform tokens, or visual components.
+
 ### 2026-07-05 — SPRINT-0015: Variant smoke test endpoint (no design changes)
 
 This sprint focused on adding deployment verification infrastructure. No changes to the design system, platform tokens, or visual components.
