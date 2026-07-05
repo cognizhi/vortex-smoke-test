@@ -162,8 +162,8 @@ store in prod); served back through `/api/avatars/[filename]`.
   endpoints for deployment verification and A/B testing. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
   systems to verify specific application variants are deployed and reachable. Current
-  variants: `305070125` (SPRINT-0015), `110428092` (SPRINT-0013), `48842051` (SPRINT-0009),
-  `963602537` (SPRINT-0007), `423911289` (SPRINT-0006), `547016860` (SPRINT-0005),
+  variants: `cancel-239001046` (SPRINT-0023), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006), `547016860` (SPRINT-0005),
   `518124667` (SPRINT-0003), `859005244` (SPRINT-0002), `908186049` (SPRINT-0001).
 
 ## 6. Data flow (a booking)
@@ -215,6 +215,25 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-05 — SPRINT-0023: Variant smoke test endpoint (cancel-239001046)
+
+**Added:**
+- New variant-specific health check endpoint `/api/healthz-smoke-cancel-239001046` for cancel
+  functionality deployment verification. Returns `{ ok: true, variant: "239001046" }` with zero
+  dependencies (no database, auth, or external calls).
+- Enables targeted monitoring of cancel-related infrastructure and supports canary deployments
+  for booking cancellation features. Can be used by monitoring systems and deployment verification
+  tools to verify cancel code paths are deployed and reachable.
+- Follows the established pattern from previous variant endpoints (SPRINT-0001 through SPRINT-0022).
+- Target response time < 100ms (typical < 10ms).
+- Comprehensive test coverage for response status, JSON structure, and performance.
+
+**Implementation details:**
+- Implemented as separate route file at `/api/healthz-smoke-cancel-239001046/route.ts`.
+- Hardcoded variant identifier "239001046" for deterministic deployment verification.
+- No dependencies on database, configuration, or external services.
+- Public endpoint (no authentication required) suitable for frequent polling by monitoring systems.
 
 ### 2026-07-05 — SPRINT-0015: Variant smoke test endpoint (305070125)
 
