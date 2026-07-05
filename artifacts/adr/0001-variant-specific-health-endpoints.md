@@ -2,7 +2,9 @@
 
 ## Status
 
-Accepted (SPRINT-0005+, continuing through SPRINT-0015)
+Accepted (SPRINT-0005+, continuing through SPRINT-0017)
+
+**Note:** Starting with SPRINT-0017, variant endpoints use a unified response envelope `{ data: { ok: true, variant: "..." }, error: null }` (see ADR-0002). Earlier variants (SPRINT-0005–SPRINT-0015) use the bare format `{ ok: true, variant: "..." }` for backward compatibility.
 
 ## Context
 
@@ -124,6 +126,7 @@ export async function GET(req, { params }) {
 - **SPRINT-0009:** Addition of variant `48842051`
 - **SPRINT-0013:** Addition of variant `110428092`
 - **SPRINT-0015:** Addition of variant `305070125`
+- **SPRINT-0017:** Introduction of unified response envelope for variant endpoints (`1072853191`); see ADR-0002
 
 ## Future considerations
 
