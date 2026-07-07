@@ -6,7 +6,7 @@
  *
  * Tests verify:
  *   - Returns 200 status code
- *   - Correct JSON response shape { data: { ok: true, variant: "54367903" }, error: null }
+ *   - Correct JSON response shape { ok: true, variant: "54367903" }
  *   - No extra fields in response
  *   - Both fields are correct type and value
  *   - Content-Type header is application/json
@@ -27,7 +27,7 @@ describe('GET /api/healthz-smoke-54367903', () => {
   });
 
   // ============================================================================
-  // GROUP 1: HTTP Status & Response Body (4 tests)
+  // GROUP 1: HTTP Status & Response Body (3 tests)
   // ============================================================================
 
   // AC-01: Returns HTTP 200 status
@@ -36,63 +36,45 @@ describe('GET /api/healthz-smoke-54367903', () => {
     expect(res.status).toBe(200);
   });
 
-  // AC-01: Response body matches spec: { data: { ok: true, variant: "54367903" }, error: null }
+  // AC-01: Response body matches spec: { ok: true, variant: "54367903" }
   it('RH-02: returns correct JSON structure with ok and variant', async () => {
     const res = await GET();
     const json = (await res.json()) as {
-      data: { ok: boolean; variant: string };
-      error: null;
+      ok: boolean;
+      variant: string;
     };
-    expect(json.data.ok).toBe(true);
-    expect(json.data.variant).toBe('54367903');
-    expect(json.error).toBeNull();
+    expect(json.ok).toBe(true);
+    expect(json.variant).toBe('54367903');
   });
 
-  // AC-01: Data object has no extra fields
-  it('RH-03: data object has no extra fields (ok and variant only)', async () => {
-    const res = await GET();
-    const json = (await res.json()) as Record<string, unknown>;
-    const dataKeys = Object.keys(json.data as Record<string, unknown>);
-    expect(dataKeys.sort()).toEqual(['ok', 'variant']);
-    expect(dataKeys).toHaveLength(2);
-  });
-
-  // AC-01: Response has exactly two root fields: data and error
-  it('RH-04: response has exactly two root fields (data and error)', async () => {
+  // AC-01: No extra fields in root object
+  it('RH-03: response has exactly two root fields (ok and variant)', async () => {
     const res = await GET();
     const json = (await res.json()) as Record<string, unknown>;
     const rootKeys = Object.keys(json);
-    expect(rootKeys).toEqual(expect.arrayContaining(['data', 'error']));
+    expect(rootKeys).toEqual(expect.arrayContaining(['ok', 'variant']));
     expect(rootKeys).toHaveLength(2);
   });
 
   // ============================================================================
-  // GROUP 2: Field Type Safety (3 tests)
+  // GROUP 2: Field Type Safety (2 tests)
   // ============================================================================
 
   // AC-02: ok field is boolean true (not just truthy string/number)
-  it('RH-05: ok field is boolean true (not just truthy)', async () => {
+  it('RH-04: ok field is boolean true (not just truthy)', async () => {
     const res = await GET();
-    const json = (await res.json()) as { data: { ok: unknown } };
-    expect(typeof json.data.ok).toBe('boolean');
-    expect(json.data.ok).toStrictEqual(true);
+    const json = (await res.json()) as { ok: unknown };
+    expect(typeof json.ok).toBe('boolean');
+    expect(json.ok).toStrictEqual(true);
   });
 
   // AC-02: variant field is string "54367903" (not number)
-  it('RH-06: variant field is string "54367903" (not number)', async () => {
+  it('RH-05: variant field is string "54367903" (not number)', async () => {
     const res = await GET();
-    const json = (await res.json()) as { data: { variant: unknown } };
-    expect(typeof json.data.variant).toBe('string');
-    expect(json.data.variant).toStrictEqual('54367903');
-    expect(json.data.variant).toBe('54367903');
-  });
-
-  // AC-02: error field is explicitly null (not undefined)
-  it('RH-07: error field is explicitly null (not undefined)', async () => {
-    const res = await GET();
-    const json = (await res.json()) as Record<string, unknown>;
-    expect(json.error).toStrictEqual(null);
-    expect('error' in json).toBe(true);
+    const json = (await res.json()) as { variant: unknown };
+    expect(typeof json.variant).toBe('string');
+    expect(json.variant).toStrictEqual('54367903');
+    expect(json.variant).toBe('54367903');
   });
 
   // ============================================================================
@@ -100,23 +82,23 @@ describe('GET /api/healthz-smoke-54367903', () => {
   // ============================================================================
 
   // AC-03: Content-Type header is application/json
-  it('RH-08: Content-Type header is application/json', async () => {
+  it('RH-06: Content-Type header is application/json', async () => {
     const res = await GET();
     expect(res.headers.get('Content-Type')).toBe('application/json');
   });
 
   // AC-04: Response is a NextResponse instance
-  it('RH-09: response is a NextResponse instance', async () => {
+  it('RH-07: response is a NextResponse instance', async () => {
     const res = await GET();
     expect(res).toBeInstanceOf(NextResponse);
   });
 
   // ============================================================================
-  // GROUP 4: Performance (3 tests)
+  // GROUP 4: Performance & Consistency (6 tests)
   // ============================================================================
 
   // AC-05: Response time < 100ms
-  it('RH-10: response time is less than 100ms', async () => {
+  it('RH-08: response time is less than 100ms', async () => {
     const startTime = performance.now();
     await GET();
     const endTime = performance.now();
@@ -125,7 +107,7 @@ describe('GET /api/healthz-smoke-54367903', () => {
   });
 
   // AC-05: Response time typically < 10ms
-  it('RH-11: response time is typically fast (< 10ms)', async () => {
+  it('RH-09: response time is typically fast (< 10ms)', async () => {
     const startTime = performance.now();
     await GET();
     const endTime = performance.now();
@@ -135,7 +117,7 @@ describe('GET /api/healthz-smoke-54367903', () => {
   });
 
   // AC-05: Under load (50 concurrent calls), all respond within 100ms
-  it('RH-12: under load (50 concurrent calls), all respond within 100ms', async () => {
+  it('RH-10: under load (50 concurrent calls), all respond within 100ms', async () => {
     const calls = Array.from({ length: 50 }, () => GET());
     const startTime = performance.now();
     const results = await Promise.all(calls);
@@ -151,12 +133,8 @@ describe('GET /api/healthz-smoke-54367903', () => {
     expect(totalElapsedMs).toBeLessThan(5000); // Allow 5s for 50 calls
   });
 
-  // ============================================================================
-  // GROUP 5: Public Access & Consistency (3 tests)
-  // ============================================================================
-
   // AC-06: No authentication required
-  it('RH-13: endpoint requires no authentication', async () => {
+  it('RH-11: endpoint requires no authentication', async () => {
     // This test verifies the endpoint doesn't guard access or check auth
     // Simply call GET without any auth headers/cookies
     const res = await GET();
@@ -164,7 +142,7 @@ describe('GET /api/healthz-smoke-54367903', () => {
   });
 
   // AC-07: Consistency — multiple sequential calls return identical responses
-  it('RH-14: multiple sequential calls return consistent responses', async () => {
+  it('RH-12: multiple sequential calls return consistent responses', async () => {
     const responses = await Promise.all([GET(), GET(), GET()]);
     const bodies = await Promise.all(responses.map((res) => res.json()));
 
@@ -173,24 +151,23 @@ describe('GET /api/healthz-smoke-54367903', () => {
       expect(res.headers.get('Content-Type')).toBe('application/json');
     });
 
-    const expected = { data: { ok: true, variant: '54367903' }, error: null };
+    const expected = { ok: true, variant: '54367903' };
     bodies.forEach((body) => {
       expect(body).toEqual(expected);
     });
   });
 
   // AC-08: No environment variables needed (self-contained)
-  it('RH-15: endpoint is self-contained and requires no env vars', async () => {
+  it('RH-13: endpoint is self-contained and requires no env vars', async () => {
     // The endpoint should work regardless of env vars
     // This test simply verifies it returns 200 with correct response
     const res = await GET();
     expect(res.status).toBe(200);
     const json = (await res.json()) as {
-      data: { ok: boolean; variant: string };
-      error: null;
+      ok: boolean;
+      variant: string;
     };
-    expect(json.data.ok).toBe(true);
-    expect(json.data.variant).toBe('54367903');
-    expect(json.error).toBeNull();
+    expect(json.ok).toBe(true);
+    expect(json.variant).toBe('54367903');
   });
 });
