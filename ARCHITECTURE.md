@@ -154,15 +154,16 @@ store in prod); served back through `/api/avatars/[filename]`.
 ### Health check endpoints
 - **`/api/health`** — Basic health check returning `{ status, timestamp }`. Used
   for general monitoring and deployment health probes.
-- **`/api/healthz-smoke`** (SPRINT-0033) — Lightweight, stateless smoke test for
-  load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }`
-  with zero dependencies (no database, auth, or external service calls). Designed
-  for frequent polling with response time < 100ms.
+- **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers
+  and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero
+  dependencies (no database, auth, or external service calls). Designed for frequent
+  polling with response time < 100ms. (Introduced SPRINT-0033.)
 - **`/api/healthz-smoke-{variant}`** (SPRINT-0005+) — Variant-specific health check
-  endpoints for deployment verification and A/B testing. Each endpoint returns
-  `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
-  systems to verify specific application variants are deployed and reachable. Current
-  variants: `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  endpoints for deployment verification, monitoring, and A/B testing. Each endpoint
+  returns `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by
+  monitoring systems to verify specific application variants are deployed and reachable.
+  Current variants: `679608109` (SPRINT-0033, cancel flow), `572185676` (SPRINT-0029),
+  `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
   `908186049` (SPRINT-0001).
@@ -216,6 +217,25 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-07 — SPRINT-0033: Variant smoke test endpoint (679608109)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-cancel-679608109` for deployment
+  verification and cancel flow monitoring. Returns `{ ok: true, variant: "679608109" }` with zero
+  dependencies (no database, auth, or external calls).
+- Updated health check endpoints inventory to include new variant. Continues the established
+  pattern for variant endpoints enabling monitoring systems to verify specific application
+  variants are deployed and reachable, with added focus on cancel flow implementation tracking.
+- Comprehensive test coverage for variant endpoint including response validation,
+  performance metrics, and load testing.
+
+**Implementation details:**
+- Follows the lightweight, dependency-free pattern established by previous variant endpoints.
+- Implemented as separate route file (`/api/healthz-smoke-cancel-679608109/route.ts`).
+- Hardcoded variant identifier enables deployment verification without dynamic configuration.
+- Target response time < 100ms (typical < 10ms).
+- Named variant path includes "cancel" to indicate cancel flow monitoring focus.
 
 ### 2026-07-06 — SPRINT-0029: Variant smoke test endpoint (572185676)
 
