@@ -14,7 +14,7 @@
  *   200 - Service is healthy and reachable
  *
  * Response body:
- *   { "data": { "ok": true, "variant": "54367903" }, "error": null }
+ *   { "ok": true, "variant": "54367903" }
  */
 import { NextResponse } from 'next/server';
 
@@ -25,16 +25,13 @@ import { NextResponse } from 'next/server';
  * Since the handler has no dependencies, it always returns 200 with ok: true.
  * If the endpoint is unreachable, the infrastructure (load balancer, orchestration platform) handles that.
  *
- * @returns NextResponse with status 200 and body { data: { ok: true, variant: "54367903" }, error: null }
+ * @returns NextResponse with status 200 and body { ok: true, variant: "54367903" }
  */
 export async function GET(): Promise<NextResponse> {
   return NextResponse.json(
     {
-      data: {
-        ok: true,
-        variant: '54367903',
-      },
-      error: null,
+      ok: true,
+      variant: '54367903',
     },
     { status: 200 }
   );
