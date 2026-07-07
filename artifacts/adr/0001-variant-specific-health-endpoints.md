@@ -2,7 +2,7 @@
 
 ## Status
 
-Accepted (SPRINT-0005+, continuing through SPRINT-0027)
+Accepted (SPRINT-0005+, continuing through SPRINT-0034)
 
 ## Context
 
@@ -125,6 +125,8 @@ export async function GET(req, { params }) {
 - **SPRINT-0013:** Addition of variant `110428092`
 - **SPRINT-0015:** Addition of variant `305070125`
 - **SPRINT-0027:** Addition of variant `901947994`
+- **SPRINT-0029:** Addition of variant `572185676`
+- **SPRINT-0034:** Addition of variant `688707801`
 
 ## Future considerations
 
