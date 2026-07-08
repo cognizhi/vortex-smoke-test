@@ -1,11 +1,8 @@
-import { describe, it, expect, beforeEach } from 'vitest';
+import { describe, it, expect } from 'vitest';
 import { NextResponse } from 'next/server';
 import { GET } from '../route';
 
 describe('GET /api/healthz-smoke-800427409', () => {
-  beforeEach(() => {
-    vi.clearAllMocks();
-  });
 
   describe('Response Status and Body', () => {
     it('RH-01: returns HTTP 200 status', async () => {
