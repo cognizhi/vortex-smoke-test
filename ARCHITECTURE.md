@@ -217,6 +217,21 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-09 — SPRINT-0045: Product documentation sprint
+
+**Overview:** Sprint focused on establishing and maintaining holistic product documentation across PRODUCT.md, ARCHITECTURE.md, and DESIGN.md.
+
+**Changes:**
+- Refactored PRODUCT.md to be a true holistic, current target-state product specification (WHAT & WHY only)
+- Removed sprint-specific implementation details from PRODUCT.md (those belong in ARCHITECTURE.md/DESIGN.md)
+- Consolidated health check endpoints documentation in operations section as established capabilities
+- Established clear documentation boundaries: PRODUCT.md focuses on product requirements and user value; ARCHITECTURE.md covers technical implementation; DESIGN.md covers visual design
+- Updated changelogs across all three planning documents to reflect documentation normalization
+
+**Scope:**
+- Documentation rationalization only; no new product features
+- Maintains all existing capabilities documented in previous sprints
+
 ### 2026-07-09 — SPRINT-0039: Variant smoke test endpoint (763023087)
 
 **Added:**
