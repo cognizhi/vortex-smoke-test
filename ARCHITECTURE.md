@@ -162,7 +162,7 @@ store in prod); served back through `/api/avatars/[filename]`.
   endpoints for deployment verification and A/B testing. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
   systems to verify specific application variants are deployed and reachable. Current
-  variants: `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  variants: `519443986` (SPRINT-0044), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
   `908186049` (SPRINT-0001).
@@ -198,24 +198,38 @@ runtime-only secrets (no requests are served during static analysis).
   (`npm run db:generate` / `db:migrate`); per-merchant tables are created at
   runtime by the provisioning DDL, not by Drizzle migrations.
 
-## 9. Key decisions & trade-offs
+## 9. Key Decisions
 
-- **Schema-per-tenant over row-level tenancy** — strong isolation, simple
-  per-merchant backup/teardown, at the cost of runtime DDL and many schemas.
-  (An early brief proposed per-merchant SQLite files; the implementation uses
-  PostgreSQL schemas instead.)
-- **Stateless HMAC cancel tokens** — no session store for the cancel flow; the
-  token itself proves authorization and encodes expiry.
-- **Optimistic concurrency for bookings** — availability is re-checked at write
-  time without row locks; acceptable for MVP volumes.
-- **In-process tenant-DB cache** — fast slug resolution; must be evicted on
-  status change (`evictMerchantDbCache`).
-- **Server Components by default** — minimal client JS; Client Components are
-  small and marked `"use client"`.
+**Architectural trade-offs and design choices:**
+
+- **Schema-per-tenant over row-level tenancy** — Provides strong isolation and simple per-merchant backup/teardown at the cost of runtime DDL and schema proliferation. (An early brief proposed per-merchant SQLite files; PostgreSQL schemas provide better scale and multi-process concurrency.)
+- **Stateless HMAC cancel tokens** — Eliminates the need for a session store in the cancellation flow; the token itself encodes expiry and proves authorization without a DB lookup.
+- **Optimistic concurrency for bookings** — Availability is re-checked at write time without row-level locks; acceptable trade-off for MVP volumes and simplicity.
+- **In-process tenant-DB cache** — Enables fast slug → schema resolution; cache must be explicitly evicted on merchant status changes (`evictMerchantDbCache`).
+- **Server Components by default** — Minimizes client-side JavaScript and keeps the app performant; Client Components are small, isolated, and explicitly marked with `"use client"`.
+- **Hardcoded variant endpoints for smoke tests** — Each variant is a separate route file (e.g., `/api/healthz-smoke-519443986/route.ts`) with hardcoded variant identifier. This enables deployment verification and monitoring of specific builds without dynamic configuration or a registry.
 
 ---
 
 ## Changelog
+
+### 2026-07-09 — SPRINT-0044: Variant smoke test endpoint (519443986)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-519443986` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "519443986" }` with zero
+  dependencies (no database, auth, or external calls).
+- Updated health check endpoints inventory to include new variant. Continues the established
+  pattern for variant endpoints enabling monitoring systems to verify specific application
+  variants are deployed and reachable.
+- Comprehensive test coverage for variant endpoint including response validation,
+  performance metrics, and load testing.
+
+**Implementation details:**
+- Follows the lightweight, dependency-free pattern established by previous variant endpoints.
+- Implemented as separate route file (`/api/healthz-smoke-519443986/route.ts`).
+- Hardcoded variant identifier enables deployment verification without dynamic configuration.
+- Target response time < 100ms (typical < 10ms).
 
 ### 2026-07-09 — SPRINT-0039: Variant smoke test endpoint (763023087)
 
