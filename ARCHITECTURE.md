@@ -162,7 +162,7 @@ store in prod); served back through `/api/avatars/[filename]`.
   endpoints for deployment verification and A/B testing. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
   systems to verify specific application variants are deployed and reachable. Current
-  variants: `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  variants: `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
   `908186049` (SPRINT-0001).
@@ -216,6 +216,24 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-09 — SPRINT-0039: Variant smoke test endpoint (763023087)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-763023087` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "763023087" }` with zero
+  dependencies (no database, auth, or external calls).
+- Updated health check endpoints inventory to include new variant. Continues the established
+  pattern for variant endpoints enabling monitoring systems to verify specific application
+  variants are deployed and reachable.
+- Comprehensive test coverage for variant endpoint including response validation,
+  performance metrics, and load testing.
+
+**Implementation details:**
+- Follows the lightweight, dependency-free pattern established by previous variant endpoints.
+- Implemented as separate route file (`/api/healthz-smoke-763023087/route.ts`).
+- Hardcoded variant identifier enables deployment verification without dynamic configuration.
+- Target response time < 100ms (typical < 10ms).
 
 ### 2026-07-08 — SPRINT-0038: Variant smoke test endpoint (800427409)
 
