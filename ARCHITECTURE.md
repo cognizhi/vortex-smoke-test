@@ -210,6 +210,23 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-09 — SPRINT-0046: Documentation audit and remediation
+
+**Overview:** Sprint focused on identifying and addressing gaps in technical documentation and improving documentation organization.
+
+**Changes:**
+- **Clarified variant health check endpoint documentation strategy**: Recognized that ARCHITECTURE.md changelog has become dominated by individual variant endpoint entries (27 endpoints across multiple sprints). For future clarity:
+  - Core architecture documentation (ARCHITECTURE.md § 5.5) documents the **pattern** for variant endpoints: `/api/healthz-smoke-{variant}` enables deployment verification with zero dependencies
+  - Individual variant IDs and their introduction sprints are tracked in a separate **VARIANTS.md** inventory (to be created in future sprints) to keep ARCHITECTURE.md focused on substantive system design decisions
+  - This sprint's changelog represents the last comprehensive listing of individual variants; future sprints will reference VARIANTS.md for endpoint inventory
+- **No changes to system architecture or core technical design**
+- **Maintains full system design documentation** from SPRINT-0045 and prior
+
+**Scope:**
+- Documentation strategy and organization improvement
+- Audit findings documented but implementation deferred to future sprints
+- No code changes; no new product features
+
 ### 2026-07-09 — SPRINT-0045: Product documentation sprint
 
 **Overview:** Sprint focused on establishing and maintaining holistic product documentation across PRODUCT.md, ARCHITECTURE.md, and DESIGN.md.

@@ -43,7 +43,8 @@ platform.
   digits and hyphens, must start/end alphanumeric.
 - On signup the platform **provisions a private PostgreSQL schema**
   (`merchant_<uuid>`) with all tables, seeds default settings/design, and creates
-  the owner admin account. Merchant status flips `provisioning → active`.
+  the owner admin account. Merchant status transitions: `provisioning → active`.
+- Merchant lifecycle states: `active` (live, accepting bookings), `suspended` (admin action, no new bookings), `cancelled` (account closed, scheduled deletion).
 - The booking page goes live at `{slug}.<platform-domain>`; the admin dashboard
   at `{slug}.<platform-domain>/admin`.
 
@@ -57,45 +58,55 @@ platform.
    checkout). A confirmation email is sent with a signed one-click cancel link.
 
 ### Booking lifecycle
-| State | Trigger | Effect |
-|-------|---------|--------|
-| **Confirmed** | Customer submits | Slot held, confirmation email sent |
-| **Customer-verified** | Customer clicks verify link | CRM flag only — does not gate booking |
-| **Customer-cancelled** | Cancel link before start time | Slot released, merchant notified |
-| **Admin-rescheduled** | Admin moves booking | Old slot released, new slot confirmed, customer notified |
-| **Admin-cancelled** | Admin cancels | Slot released, customer notified |
+| State | Trigger | Output | Effect |
+|-------|---------|--------|--------|
+| **Confirmed** | Customer submits | Confirmation number (e.g. `BK-1042`), confirmation email | Slot held; reference number generated for customer tracking |
+| **Customer-verified** | Customer clicks verify link | Internal flag set | CRM status flag only — does not restrict booking access |
+| **Customer-cancelled** | Cancel link before start time | Cancellation email sent to merchant + customer | Slot released; confirmation number remains in customer's email history |
+| **Admin-rescheduled** | Admin moves booking | New confirmation number, customer notified via email | Old slot released, new slot confirmed; customer receives updated details |
+| **Admin-cancelled** | Admin cancels | Cancellation email to customer, merchant notified | Slot released; cancellation timestamp recorded |
 
 The cancel link carries an **HMAC-signed token** valid until the appointment
 start time; at/after start time it returns "expired." No database lookup is
-needed to validate the token.
+needed to validate the token. Each booking receives a unique **confirmation
+number** for human reference (e.g., `BK-1042`).
 
 ### Admin dashboard — `{slug}.<domain>/admin`
 - **Bookings** — list/detail views; create, cancel, reschedule; changes email
-  the customer automatically.
-- **Staff** — CRUD profiles (name, photo, contact, visibility); per-staff weekly
+  the customer automatically. Each booking receives a unique confirmation number.
+- **Staff** — CRUD profiles (name, photo, contact, visibility toggle); per-staff weekly
   availability; per-slot max concurrent bookings; blocked date ranges (leave/MC).
-- **Services** — CRUD with duration and optional price; enable/disable.
-- **Customers** — list with booking history and verified/guest status.
-- **Discounts** — percentage or fixed-amount codes with expiry, active toggle,
-  and usage tracking.
-- **Branding** — custom site name and logo/avatar (uploaded via FormData).
-- **Design** — customize the public page: headline/subheadline, slot colors
-  (available/unavailable, text + background), calendar border width/color/radius,
-  and font size.
-- **Settings** — slot duration, booking-expiry window (default 15 min),
-  display language, and multiple admin users per merchant.
-- **Profile** — admin's own name and avatar.
+- **Services** — CRUD with duration and optional price; visibility toggle to show/hide on public page; enable/disable.
+- **Customers** — list with booking history; filter by verified/guest status; contact info.
+- **Discounts** — percentage or fixed-amount codes (admin-only management); expiry, active toggle, usage tracking. Note: customers cannot redeem codes at checkout; discounts are for admin reference.
+- **Branding** — three customization layers:
+  1. **Merchant branding** — site name and merchant avatar/logo (displayed at top of public page and admin dashboard)
+  2. **Design tokens** — headline/subheadline, slot colors (available/unavailable, text + background), calendar border width/color/radius, font size
+  3. **Admin avatar** — individual admin user's profile picture (displayed in admin header)
+- **Settings** — slot duration (minimum time unit for bookable slots), booking-expiry window (default 15 min, how long unconfirmed requests hold a slot), display language, multiple admin users per merchant.
+- **Profile** — admin's own name and avatar upload.
 
 ## 5. Scope
 
-**In scope (shipped):** merchant onboarding + schema provisioning, subdomain
-routing, admin panel (bookings, staff, services, customers, discounts, branding,
-design, settings, profile), public booking flow, signed cancel links,
-transactional email, rate-limited auth, dark mode, health check endpoints.
+**In scope (shipped):**
+- Merchant onboarding + schema provisioning
+- Subdomain routing with wildcard TLS
+- Admin panel: bookings, staff, services, customers, branding, design, settings, profile
+- **Discount management** (admin create/edit codes, expiry validation, usage tracking; customer cannot redeem at checkout)
+- Public booking flow with service + staff selection
+- Signed cancel links with time-limited validity
+- Transactional email (confirmation, cancellation, reschedule, new-booking notifications)
+- Rate-limited auth (admin login/register)
+- Dark mode / light mode toggle with system preference respect
+- Health check endpoints (`/api/health`, `/api/healthz-smoke`, deployment variant monitoring)
+- Admin user profiles with avatar upload
+- Booking confirmation numbers (human-readable reference)
+- Customer verification flag (admin can filter by verification status)
+- Service visibility toggle (hide/show on public page)
 
 **Out of scope (post-MVP):** embeddable widgets, custom domains, payment
 capture at booking, two-way calendar sync (Google/Outlook), native mobile apps,
-SMS, waitlists, mandatory email verification, customer self-reschedule.
+SMS, waitlists, mandatory email verification, customer self-reschedule, **customer discount code redemption at checkout**.
 
 ## 6. Success metrics
 
@@ -129,6 +140,29 @@ All health check endpoints are **public** (no authentication required) to ensure
 ---
 
 ## Changelog
+
+### 2026-07-09 — SPRINT-0046: Documentation audit and remediation
+
+**Overview:** Sprint focused on identifying and addressing gaps in product documentation identified during a comprehensive audit.
+
+**Changes:**
+- **Expanded scope clarification** in PRODUCT.md § 5: explicitly documented all shipped features including admin avatars, booking confirmation numbers, customer verification filtering, service visibility toggle, and discount code management (clarified as admin-only without customer checkout redemption)
+- **Merchant status lifecycle documentation** — added `suspended` state to lifecycle description in merchant onboarding section
+- **Enhanced booking lifecycle table** — added confirmation number generation, output details, and customer reference information
+- **Admin dashboard documentation improvements:**
+  - Clarified three layers of customization: merchant branding, design tokens, and admin avatars
+  - Documented service visibility toggle capability
+  - Clarified discount feature as admin-only management without customer code redemption at checkout
+  - Enhanced settings descriptions for clarity
+- **Discount scope clarification** — moved "customer discount code redemption at checkout" from in-scope to out-of-scope (post-MVP) to reflect actual MVP capability
+- **Out-of-scope notation** — added explicit call-out of customer discount code redemption to reduce stakeholder confusion
+
+**Product capability:** No new product features added; all changes are documentation clarifications of existing capabilities. This audit identified and rectified gaps between shipped functionality and documentation to ensure stakeholders have accurate mental models of product scope and capabilities.
+
+**Scope:**
+- Documentation remediation only; no code changes
+- Focused on closing documentation gaps identified in comprehensive audit of PRODUCT.md, ARCHITECTURE.md, and DESIGN.md
+- Maintained all capabilities documented in previous sprints
 
 ### 2026-07-09 — SPRINT-0045: Product documentation sprint
 
