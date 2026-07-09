@@ -198,24 +198,32 @@ runtime-only secrets (no requests are served during static analysis).
   (`npm run db:generate` / `db:migrate`); per-merchant tables are created at
   runtime by the provisioning DDL, not by Drizzle migrations.
 
-## 9. Key decisions & trade-offs
+## Key Decisions
 
-- **Schema-per-tenant over row-level tenancy** — strong isolation, simple
-  per-merchant backup/teardown, at the cost of runtime DDL and many schemas.
-  (An early brief proposed per-merchant SQLite files; the implementation uses
-  PostgreSQL schemas instead.)
-- **Stateless HMAC cancel tokens** — no session store for the cancel flow; the
-  token itself proves authorization and encodes expiry.
-- **Optimistic concurrency for bookings** — availability is re-checked at write
-  time without row locks; acceptable for MVP volumes.
-- **In-process tenant-DB cache** — fast slug resolution; must be evicted on
-  status change (`evictMerchantDbCache`).
-- **Server Components by default** — minimal client JS; Client Components are
-  small and marked `"use client"`.
+- **Schema-per-tenant over row-level tenancy** — strong isolation, simple per-merchant backup/teardown, at the cost of runtime DDL and many schemas.
+- **Stateless HMAC cancel tokens** — no session store for the cancel flow; the token itself proves authorization and encodes expiry.
+- **Optimistic concurrency for bookings** — availability is re-checked at write time without row locks; acceptable for MVP volumes.
+- **In-process tenant-DB cache** — fast slug resolution; must be evicted on status change (`evictMerchantDbCache`).
+- **Server Components by default** — minimal client JS; Client Components are small and marked `"use client"`.
 
 ---
 
 ## Changelog
+
+### 2026-07-09 — SPRINT-0045: Product documentation sprint
+
+**Overview:** Sprint focused on establishing and maintaining holistic product documentation across PRODUCT.md, ARCHITECTURE.md, and DESIGN.md.
+
+**Changes:**
+- Refactored PRODUCT.md to be a true holistic, current target-state product specification (WHAT & WHY only)
+- Removed sprint-specific implementation details from PRODUCT.md (those belong in ARCHITECTURE.md/DESIGN.md)
+- Consolidated health check endpoints documentation in operations section as established capabilities
+- Established clear documentation boundaries: PRODUCT.md focuses on product requirements and user value; ARCHITECTURE.md covers technical implementation; DESIGN.md covers visual design
+- Updated changelogs across all three planning documents to reflect documentation normalization
+
+**Scope:**
+- Documentation rationalization only; no new product features
+- Maintains all existing capabilities documented in previous sprints
 
 ### 2026-07-09 — SPRINT-0039: Variant smoke test endpoint (763023087)
 
