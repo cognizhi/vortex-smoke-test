@@ -198,20 +198,13 @@ runtime-only secrets (no requests are served during static analysis).
   (`npm run db:generate` / `db:migrate`); per-merchant tables are created at
   runtime by the provisioning DDL, not by Drizzle migrations.
 
-## 9. Key decisions & trade-offs
+## Key Decisions
 
-- **Schema-per-tenant over row-level tenancy** — strong isolation, simple
-  per-merchant backup/teardown, at the cost of runtime DDL and many schemas.
-  (An early brief proposed per-merchant SQLite files; the implementation uses
-  PostgreSQL schemas instead.)
-- **Stateless HMAC cancel tokens** — no session store for the cancel flow; the
-  token itself proves authorization and encodes expiry.
-- **Optimistic concurrency for bookings** — availability is re-checked at write
-  time without row locks; acceptable for MVP volumes.
-- **In-process tenant-DB cache** — fast slug resolution; must be evicted on
-  status change (`evictMerchantDbCache`).
-- **Server Components by default** — minimal client JS; Client Components are
-  small and marked `"use client"`.
+- **Schema-per-tenant over row-level tenancy** — strong isolation, simple per-merchant backup/teardown, at the cost of runtime DDL and many schemas.
+- **Stateless HMAC cancel tokens** — no session store for the cancel flow; the token itself proves authorization and encodes expiry.
+- **Optimistic concurrency for bookings** — availability is re-checked at write time without row locks; acceptable for MVP volumes.
+- **In-process tenant-DB cache** — fast slug resolution; must be evicted on status change (`evictMerchantDbCache`).
+- **Server Components by default** — minimal client JS; Client Components are small and marked `"use client"`.
 
 ---
 
