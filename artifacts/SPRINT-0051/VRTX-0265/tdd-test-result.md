@@ -110,4 +110,4 @@ $ bun run test src/app/api/healthz-smoke-453353908/__tests__/route.test.ts --run
 
 ---
 
-## TDD-RESULT: 15 passed, 0 failed
+TDD-RESULT: 15 passed, 0 failed
