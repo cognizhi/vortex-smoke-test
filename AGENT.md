@@ -223,6 +223,10 @@ If there's ambiguity, misalignment, or a blocker:
 
 ## Changelog
 
+### 2026-07-10 — SPRINT-0052: Bugfix smoke test health check endpoints (no agent protocol changes)
+
+This sprint focused on adding deployment verification infrastructure. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
+
 ### 2026-07-10 — SPRINT-0051: Agent roles and collaboration protocols
 
 **Added:**
