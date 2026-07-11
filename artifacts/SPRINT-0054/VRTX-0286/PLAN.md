@@ -1,9 +1,9 @@
-# TASK VRTX-0284: CI/Build verification and documentation update
+# TASK VRTX-0286: CI/Build verification and documentation update
 
 **Sprint:** SPRINT-0054
 **Phase:** CI/Build Verification & Documentation Update
 **Duration estimate:** 35 minutes
-**Depends on:** VRTX-0283 (Implement and test variant endpoint 85511011)
+**Depends on:** VRTX-0285 (Implement and test variant endpoint 85511011)
 
 ---
 

@@ -1,4 +1,4 @@
-# TASK VRTX-0283: Implement and test variant endpoint 85511011
+# TASK VRTX-0285: Implement and test variant endpoint 85511011
 
 **Sprint:** SPRINT-0054
 **Phase:** Implementation & Test Harness
