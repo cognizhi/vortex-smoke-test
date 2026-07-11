@@ -122,13 +122,25 @@ The platform provides health check endpoints for monitoring systems and load bal
 
 **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero dependencies (no database, auth, or external service calls). Designed for frequent polling with target response time < 100ms (typical < 10ms). Follows the platform's standard API envelope pattern.
 
-**Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required.
+**Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others.
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
 
 ---
 
 ## Changelog
+
+### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (85511011)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-85511011` for deployment verification and monitoring. Returns `{ ok: true, variant: "85511011" }` with zero dependencies (no database, auth, or external calls).
+- Extends deployment verification system enabling operations teams to monitor variant 85511011 in production.
+- Continues the established pattern for variant endpoints supporting safe canary deployments and traffic management strategies.
+
+**Product value:**
+- Operations teams can verify the 85511011 variant is deployed and reachable in production
+- Supports distributed deployment scenarios and smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
 
 ### 2026-07-11 — SPRINT-0053: Variant smoke test endpoint (28611693)
 
