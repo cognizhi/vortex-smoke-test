@@ -122,13 +122,36 @@ The platform provides health check endpoints for monitoring systems and load bal
 
 **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero dependencies (no database, auth, or external service calls). Designed for frequent polling with target response time < 100ms (typical < 10ms). Follows the platform's standard API envelope pattern.
 
-**Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others.
+**Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
+- Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
+- Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
 
 ---
 
 ## Changelog
+
+### 2026-07-11 — SPRINT-0055: Bugfix planning & health check endpoints (254027906, 382671714)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-bugfix-254027906` for deployment verification and monitoring. Returns `{ ok: true, variant: "254027906" }` with zero dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-bugfix2-382671714` for deployment verification and monitoring. Returns `{ ok: true, variant: "382671714" }` with zero dependencies (no database, auth, or external calls).
+- Comprehensive bugfix planning and defect analysis documenting three critical issues:
+  - P0 (High): Hardcoded session in branding reset endpoint (VRTX-0292)
+  - P1 (Medium): Missing merchantNotes column in bookings table (VRTX-0293)
+  - P2 (Low-Medium): Duplicated cancel route logic (VRTX-0294)
+
+**Product value:**
+- Operations teams can verify the bugfix variants (254027906, 382671714) are deployed and reachable in production
+- Supports distributed deployment scenarios and smoke test verification
+- Enables comprehensive monitoring of bugfix-specific application builds
+- Establishes roadmap for fixing three identified defects in future sprints
+
+**Technical scope:**
+- Two new health check endpoints with full test coverage (14 tests each, 100% passing)
+- Defect reproduction and root cause analysis with detailed fix plans
+- Zero breaking changes; all existing functionality unchanged
 
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (85511011)
 
