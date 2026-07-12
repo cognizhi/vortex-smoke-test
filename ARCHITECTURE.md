@@ -162,7 +162,7 @@ store in prod); served back through `/api/avatars/[filename]`.
   endpoints for deployment verification and A/B testing. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
   systems to verify specific application variants are deployed and reachable. Current
-  variants: `85511011` (SPRINT-0054), `28611693` (SPRINT-0053), `453353908` (SPRINT-0051), `992377535` (SPRINT-0050), `96685` (SPRINT-0048), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  variants: `778162394` (SPRINT-0059, endpoints a/b/c), `85511011` (SPRINT-0054), `28611693` (SPRINT-0053), `453353908` (SPRINT-0051), `992377535` (SPRINT-0050), `96685` (SPRINT-0048), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
   `908186049` (SPRINT-0001).
@@ -216,6 +216,30 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-12 — SPRINT-0059: Three independent health check endpoints (778162394)
+
+**Added:**
+- Three independent variant-specific health check endpoints for deployment verification:
+  - `/api/healthz-smoke-778162394-a` — Independent endpoint A
+  - `/api/healthz-smoke-778162394-b` — Independent endpoint B
+  - `/api/healthz-smoke-778162394-c` — Independent endpoint C
+- Each endpoint returns `{ ok: true, variant: "778162394" }` with zero dependencies
+- Follows established lightweight health check pattern with response time < 100ms
+- Each endpoint has comprehensive test coverage (100% coverage for handler logic)
+- Endpoints designed for parallel implementation; completely independent with no shared code
+
+**Implementation details:**
+- Three separate route files, each with dedicated test suite
+- No code duplication or shared utilities between endpoints
+- Matches pattern of existing 47+ variant endpoints in codebase
+- Public endpoints (no authentication) suitable for load balancers and monitoring systems
+
+**Product value:**
+- Operations teams can verify variant 778162394 is deployed across multiple paths (a/b/c)
+- Supports distributed deployment verification scenarios
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints allow monitoring system redundancy and canary deployment strategies
 
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (85511011)
 

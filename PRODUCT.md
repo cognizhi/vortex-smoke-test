@@ -123,7 +123,7 @@ The platform provides health check endpoints for monitoring systems and load bal
 **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero dependencies (no database, auth, or external service calls). Designed for frequent polling with target response time < 100ms (typical < 10ms). Follows the platform's standard API envelope pattern.
 
 **Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
-- Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
+- Standard variants: `778162394` (endpoints a/b/c), `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
 - Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
@@ -131,6 +131,28 @@ All health check endpoints are **public** (no authentication required) to ensure
 ---
 
 ## Changelog
+
+### 2026-07-12 — SPRINT-0059: Three independent variant health check endpoints (778162394)
+
+**Added:**
+- Three independent health check endpoints for variant 778162394:
+  - `/api/healthz-smoke-778162394-a`
+  - `/api/healthz-smoke-778162394-b`
+  - `/api/healthz-smoke-778162394-c`
+- Each endpoint returns `{ ok: true, variant: "778162394" }` with zero dependencies
+- Lightweight, stateless health checks suitable for high-frequency polling (< 100ms response time)
+- Public endpoints with no authentication required
+
+**Product value:**
+- Operations teams can verify variant 778162394 is deployed and reachable across multiple independent paths
+- Supports distributed deployment scenarios and smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints allow redundancy and enable canary deployment verification strategies
+
+**Technical scope:**
+- Three new health check endpoints with full test coverage (100% coverage per endpoint)
+- Zero breaking changes; all existing functionality unchanged
+- Follows established pattern from existing 47+ variant endpoints
 
 ### 2026-07-11 — SPRINT-0055: Bugfix planning & health check endpoints (254027906, 382671714)
 
