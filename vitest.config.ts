@@ -21,6 +21,7 @@ export default defineConfig(({ mode }) => {
       environmentMatchGlobs: [
         ['**/*session*', 'node'],
         ['**/api/auth/**', 'node'],
+        ['**/healthz-smoke*/**', 'node'],
       ],
       deps: {
         // zod v3.25+ is ESM-only; inlining prevents undefined-module errors
