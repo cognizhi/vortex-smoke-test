@@ -123,7 +123,7 @@ The platform provides health check endpoints for monitoring systems and load bal
 **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero dependencies (no database, auth, or external service calls). Designed for frequent polling with target response time < 100ms (typical < 10ms). Follows the platform's standard API envelope pattern.
 
 **Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
-- Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
+- Standard variants: `282954433` (3 paths: a, b, c), `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
 - Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
@@ -131,6 +131,28 @@ All health check endpoints are **public** (no authentication required) to ensure
 ---
 
 ## Changelog
+
+### 2026-07-12 — SPRINT-0057: Variant smoke test endpoints (282954433, three independent paths)
+
+**Added:**
+- Three independent variant-specific health check endpoints for variant 282954433:
+  - `/api/healthz-smoke-282954433-a` — Lightweight smoke test, path A. Returns `{ ok: true, variant: "282954433" }` with zero dependencies.
+  - `/api/healthz-smoke-282954433-b` — Lightweight smoke test, path B. Returns `{ ok: true, variant: "282954433" }` with zero dependencies.
+  - `/api/healthz-smoke-282954433-c` — Lightweight smoke test, path C. Returns `{ ok: true, variant: "282954433" }` with zero dependencies.
+- Each endpoint is completely self-contained and independent (no shared code, no dependencies between them).
+- Comprehensive test coverage for each endpoint (14 tests per endpoint, 100% passing).
+- Target response time < 100ms (typical < 10ms) for all three endpoints.
+
+**Product value:**
+- Operations teams can verify the three independent paths (a, b, c) of variant 282954433 are deployed and reachable in production
+- Supports distributed deployment scenarios with multiple independent code paths
+- Enables comprehensive monitoring of variant-specific application builds
+- Each path can be monitored and validated separately
+
+**Technical scope:**
+- Three new health check endpoints with full test coverage (42 tests total)
+- Zero breaking changes; all existing functionality unchanged
+- No shared code between endpoints; implementations are completely independent
 
 ### 2026-07-11 — SPRINT-0055: Bugfix planning & health check endpoints (254027906, 382671714)
 

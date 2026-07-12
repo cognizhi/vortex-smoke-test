@@ -162,7 +162,7 @@ store in prod); served back through `/api/avatars/[filename]`.
   endpoints for deployment verification and A/B testing. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used by monitoring
   systems to verify specific application variants are deployed and reachable. Current
-  variants: `85511011` (SPRINT-0054), `28611693` (SPRINT-0053), `453353908` (SPRINT-0051), `992377535` (SPRINT-0050), `96685` (SPRINT-0048), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
+  variants: `282954433` (3 paths: a, b, c) (SPRINT-0057), `85511011` (SPRINT-0054), `28611693` (SPRINT-0053), `453353908` (SPRINT-0051), `992377535` (SPRINT-0050), `96685` (SPRINT-0048), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
   `908186049` (SPRINT-0001).
@@ -216,6 +216,25 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-12 — SPRINT-0057: Variant smoke test endpoints (282954433, three independent paths)
+
+**Added:**
+- Three independent variant-specific health check endpoints for variant 282954433:
+  - `/api/healthz-smoke-282954433-a` for deployment verification and monitoring (path A)
+  - `/api/healthz-smoke-282954433-b` for deployment verification and monitoring (path B)
+  - `/api/healthz-smoke-282954433-c` for deployment verification and monitoring (path C)
+- Each endpoint returns `{ ok: true, variant: "282954433" }` with zero dependencies
+- Updated health check endpoints inventory to include variant 282954433 (3 independent paths)
+- Each path follows the lightweight, dependency-free pattern established by previous variant endpoints
+
+**Implementation details:**
+- Three separate route files (`/api/healthz-smoke-282954433-{a,b,c}/route.ts`)
+- Completely independent implementations (no shared code between paths)
+- Hardcoded variant identifier enables deployment verification without dynamic configuration
+- Target response time < 100ms (typical < 10ms)
+- Each endpoint includes comprehensive test suite (14 tests per endpoint, 42 total)
+- All endpoints can be worked in parallel with no file conflicts
 
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (85511011)
 
