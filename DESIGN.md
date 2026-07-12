@@ -132,6 +132,10 @@ Branding**.
 
 ## Changelog
 
+### 2026-07-12 — SPRINT-0062: Three variant smoke test endpoints (no design changes)
+
+This sprint focused on adding three independent variant-specific health check endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.
+
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (no design changes)
 
 This sprint focused on adding a variant-specific health check endpoint for deployment verification. No changes to the design system, platform tokens, or visual components.
