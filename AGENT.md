@@ -223,6 +223,28 @@ If there's ambiguity, misalignment, or a blocker:
 
 ## Changelog
 
+### 2026-07-12 — SPRINT-0063: Three variant smoke test endpoints
+
+**Added:**
+- Three new variant-specific health check endpoints (`1026761837-a`, `1026761837-b`,
+  `1026761837-c`) for deployment verification and A/B testing.
+- Comprehensive unit test coverage per endpoint (7 tests, > 90% coverage).
+- Each endpoint follows the lightweight, dependency-free pattern established by
+  previous variant endpoints.
+
+**Impact on Agent Responsibilities:**
+- **Product:** Continues sprint planning structure with phases: Implementation (parallel),
+  Test Harness, Quality Assurance, CI Verification, Documentation.
+- **Engineer:** Implements three independent parallel tasks with no shared code or
+  dependencies.
+- **QA:** Verifies endpoint behavior via unit tests and manual testing against
+  specification.
+- **Architect:** Reviews code consistency with established smoke test endpoint patterns.
+
+**No Changes:**
+- Agent protocols and collaboration agreements remain unchanged; this sprint follows
+  the established working agreements for parallel endpoint implementation.
+
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (no agent protocol changes)
 
 This sprint focused on adding a variant-specific health check endpoint for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.

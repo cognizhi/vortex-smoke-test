@@ -217,6 +217,50 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-12 — SPRINT-0063: Three variant smoke test endpoints (1026761837)
+
+**Added:**
+- Three variant-specific health check endpoints for deployment verification and
+  A/B testing: `/api/healthz-smoke-1026761837-a`, `/api/healthz-smoke-1026761837-b`,
+  and `/api/healthz-smoke-1026761837-c`.
+- Each endpoint located at `src/app/api/healthz-smoke-1026761837-{a,b,c}/route.ts`.
+- Each endpoint returns HTTP 200 with JSON response `{ ok: true, variant: "1026761837" }`.
+- Comprehensive unit test coverage: 7 tests per endpoint validating response format,
+  status code, headers, auth requirements, consistency, and performance (< 100ms).
+- Full TypeScript type annotations and JSDoc documentation.
+
+**Implementation Details:**
+- **Pattern:** Separate route handlers for each endpoint enable parallel development,
+  avoid merge conflicts, and maintain consistency with established smoke test pattern.
+- **Dependencies:** Zero — no database, authentication, or external service calls.
+- **Performance:** Target < 100ms (typical < 10ms); appropriate for high-frequency
+  polling by load balancers and orchestration platforms.
+- **Hardcoded Variant:** Identifier is hardcoded to enable deployment verification
+  without configuration lookups.
+- **Public Access:** No authentication required; monitoring systems access freely.
+
+**Testing:**
+- Unit tests via Vitest (jsdom environment).
+- 7 test cases per endpoint cover status, JSON shape, headers, auth, consistency,
+  type safety, and performance.
+- Coverage > 90% for all new code.
+- Manual testing via HTTP GET to localhost:3000/api/healthz-smoke-1026761837-{a,b,c}.
+
+**Rationale for Three Separate Endpoints:**
+- Simplifies deployment verification: each endpoint can be checked independently.
+- Enables canary deployment strategies: different variants can be deployed to
+  different regions or instances.
+- Reduces coupling: no shared code means changes to one endpoint don't affect others.
+- Follows established pattern: consistent with previous variant endpoints since
+  SPRINT-0005 (e.g., SPRINT-0007, SPRINT-0013, SPRINT-0056, etc.).
+
+**Related Subsystems:**
+- Part of "Health Check Endpoints" under "Core subsystems."
+- Follows same pattern as `/api/health` (base health check) and `/api/healthz-smoke`
+  (lightweight smoke test).
+- Used by: load balancers, Kubernetes readiness probes, monitoring systems, canary
+  deployment systems.
+
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (85511011)
 
 **Added:**

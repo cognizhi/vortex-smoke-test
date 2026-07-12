@@ -132,6 +132,20 @@ Branding**.
 
 ## Changelog
 
+### 2026-07-12 — SPRINT-0063: Three variant smoke test endpoints (backend)
+
+This sprint focused on adding backend health check endpoints (no design system impact).
+
+**Added:**
+- Three new backend health check endpoints (`1026761837-a`, `1026761837-b`, `1026761837-c`)
+  for deployment verification and A/B testing.
+
+**Note:**
+- Health check endpoints are infrastructure endpoints with no visual or interaction
+  design implications. See ARCHITECTURE.md for technical details.
+- Continued pattern of lightweight, dependency-free endpoints for monitoring and
+  deployment verification.
+
 ### 2026-07-11 — SPRINT-0054: Variant smoke test endpoint (no design changes)
 
 This sprint focused on adding a variant-specific health check endpoint for deployment verification. No changes to the design system, platform tokens, or visual components.
