@@ -132,6 +132,21 @@ All health check endpoints are **public** (no authentication required) to ensure
 
 ## Changelog
 
+### 2026-07-12 — SPRINT-0064: Three independent variant endpoints (637917955)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-637917955-a` for deployment verification and monitoring. Returns `{ ok: true, variant: "637917955" }` with zero dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-637917955-b` for deployment verification and monitoring. Returns `{ ok: true, variant: "637917955" }` with zero dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-637917955-c` for deployment verification and monitoring. Returns `{ ok: true, variant: "637917955" }` with zero dependencies (no database, auth, or external calls).
+- Extended deployment verification system enabling operations teams to monitor three variant builds of application 637917955 in production.
+- Continues the established pattern for variant endpoints supporting safe canary deployments and traffic management strategies.
+
+**Product value:**
+- Operations teams can verify three independent 637917955 variants are deployed and reachable in production
+- Supports distributed deployment scenarios and parallel smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints support A/B testing and canary deployment strategies
+
 ### 2026-07-11 — SPRINT-0055: Bugfix planning & health check endpoints (254027906, 382671714)
 
 **Added:**
