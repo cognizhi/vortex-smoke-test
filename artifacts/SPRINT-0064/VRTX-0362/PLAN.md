@@ -1,4 +1,4 @@
-# VRTX-0359: Implement `/api/healthz-smoke-637917955-b` endpoint
+# VRTX-0362: Implement `/api/healthz-smoke-637917955-b` endpoint
 
 **Part of:** SPRINT-0064 — Three Independent Variant Smoke Test Endpoints (637917955)
 

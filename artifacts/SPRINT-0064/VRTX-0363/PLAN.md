@@ -1,16 +1,16 @@
-# VRTX-0358: Implement `/api/healthz-smoke-637917955-a` endpoint
+# VRTX-0363: Implement `/api/healthz-smoke-637917955-c` endpoint
 
 **Part of:** SPRINT-0064 — Three Independent Variant Smoke Test Endpoints (637917955)
 
-**Scope:** Implement a single, self-contained variant-specific health check endpoint at `/api/healthz-smoke-637917955-a` with comprehensive test coverage.
+**Scope:** Implement a single, self-contained variant-specific health check endpoint at `/api/healthz-smoke-637917955-c` with comprehensive test coverage.
 
 ---
 
 ## 1. What We're Building
 
-A lightweight, dependency-free HTTP GET endpoint that returns a JSON response identifying the "637917955-a" variant.
+A lightweight, dependency-free HTTP GET endpoint that returns a JSON response identifying the "637917955-c" variant.
 
-**Endpoint:** `GET /api/healthz-smoke-637917955-a`
+**Endpoint:** `GET /api/healthz-smoke-637917955-c`
 
 **Response (200 OK):**
 ```json
@@ -36,7 +36,7 @@ This task owns the following files (no shared files with other tasks):
 
 ```
 src/app/api/
-└── healthz-smoke-637917955-a/
+└── healthz-smoke-637917955-c/
     ├── route.ts                    ← GET handler
     └── __tests__/
         └── route.test.ts           ← Comprehensive test suite
@@ -50,12 +50,12 @@ src/app/api/
 
 ## 3. Implementation Details
 
-### Handler File: `src/app/api/healthz-smoke-637917955-a/route.ts`
+### Handler File: `src/app/api/healthz-smoke-637917955-c/route.ts`
 
 **Content:**
 ```typescript
 /**
- * GET /api/healthz-smoke-637917955-a
+ * GET /api/healthz-smoke-637917955-c
  *
  * Variant-specific lightweight smoke test endpoint for load balancers and monitoring systems.
  * This endpoint identifies the specific variant build (637917955) in the response.
@@ -75,7 +75,7 @@ src/app/api/
 import { NextResponse } from 'next/server';
 
 /**
- * GET handler for /api/healthz-smoke-637917955-a
+ * GET handler for /api/healthz-smoke-637917955-c
  *
  * Returns a deterministic health check response with variant identification.
  * Since the handler has no dependencies, it always returns 200 with ok: true.
@@ -100,7 +100,7 @@ export async function GET(): Promise<NextResponse> {
 - `NextResponse.json()` for proper JSON serialization and headers
 - Explicit status 200 for clarity
 
-### Test File: `src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts`
+### Test File: `src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts`
 
 **Content:** Comprehensive 15-test suite organized in 7 test suites
 
@@ -122,7 +122,7 @@ import { describe, it, expect, beforeEach } from 'vitest';
 import { NextResponse } from 'next/server';
 import { GET } from '../route';
 
-describe('GET /api/healthz-smoke-637917955-a', () => {
+describe('GET /api/healthz-smoke-637917955-c', () => {
   beforeEach(() => {
     // No setup needed
   });
@@ -187,14 +187,14 @@ describe('GET /api/healthz-smoke-637917955-a', () => {
 
 This task is complete when:
 
-- [ ] File `src/app/api/healthz-smoke-637917955-a/route.ts` exists and is committed
-- [ ] File `src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts` exists and is committed
-- [ ] All 15 tests pass: `npm run test src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts`
+- [ ] File `src/app/api/healthz-smoke-637917955-c/route.ts` exists and is committed
+- [ ] File `src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts` exists and is committed
+- [ ] All 15 tests pass: `npm run test src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts`
 - [ ] Code coverage 100% for new endpoint code
 - [ ] Lint clean: `npm run lint` (0 warnings across entire repo)
 - [ ] TypeScript strict: `npm run typecheck` (no errors)
 - [ ] Build succeeds: `npm run build`
-- [ ] Manual verification: `GET http://localhost:3000/api/healthz-smoke-637917955-a` returns `{"ok":true,"variant":"637917955"}`
+- [ ] Manual verification: `GET http://localhost:3000/api/healthz-smoke-637917955-c` returns `{"ok":true,"variant":"637917955"}`
 - [ ] Response time verified < 100ms in test suite
 - [ ] Commit message clear and descriptive
 - [ ] Branch pushed to remote with `-u origin` flag
@@ -206,19 +206,19 @@ This task is complete when:
 ### How to Run Tests Locally
 ```bash
 # Single test file
-npm run test src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts
+npm run test src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts
 
 # Watch mode
-npm run test -- --watch src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts
+npm run test -- --watch src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts
 
 # Coverage report
-npm run test:coverage src/app/api/healthz-smoke-637917955-a/__tests__/route.test.ts
+npm run test:coverage src/app/api/healthz-smoke-637917955-c/__tests__/route.test.ts
 ```
 
 ### How to Test the Endpoint Locally
 ```bash
 # After npm run dev
-curl http://localhost:3000/api/healthz-smoke-637917955-a
+curl http://localhost:3000/api/healthz-smoke-637917955-c
 
 # Expected output
 {"ok":true,"variant":"637917955"}
@@ -234,8 +234,8 @@ The performance tests in the suite verify:
 ## 7. Related Work
 
 This task is **completely independent** — it does not depend on or share code with:
+- VRTX-0358 (healthz-smoke-637917955-a endpoint)
 - VRTX-0359 (healthz-smoke-637917955-b endpoint)
-- VRTX-0360 (healthz-smoke-637917955-c endpoint)
 
 Each endpoint is a standalone implementation with its own files.
 
@@ -244,9 +244,9 @@ Each endpoint is a standalone implementation with its own files.
 ## 8. Notes for Implementer
 
 1. **Copy-paste OK:** You can copy the exact pattern from `src/app/api/healthz-smoke-28611693/` as a template, then update:
-   - The directory name to `healthz-smoke-637917955-a`
+   - The directory name to `healthz-smoke-637917955-c`
    - The variant string to `"637917955"` (same in all three endpoints)
-   - The endpoint path in comments to `/api/healthz-smoke-637917955-a`
+   - The endpoint path in comments to `/api/healthz-smoke-637917955-c`
 
 2. **No shared utilities:** Do not create or use shared helpers — each endpoint should be self-contained.
 
@@ -265,7 +265,7 @@ Each endpoint is a standalone implementation with its own files.
 ## 9. Success Metrics
 
 After this task is done:
-- ✅ Endpoint accessible at `GET /api/healthz-smoke-637917955-a`
+- ✅ Endpoint accessible at `GET /api/healthz-smoke-637917955-c`
 - ✅ Returns `{ ok: true, variant: "637917955" }`
 - ✅ HTTP 200 status
 - ✅ Zero dependencies (no DB, auth, or external calls)
