@@ -123,14 +123,35 @@ The platform provides health check endpoints for monitoring systems and load bal
 **`/api/healthz-smoke`** — Lightweight, stateless smoke test for load balancers and monitoring systems. Returns `{ data: { ok: true }, error: null }` with zero dependencies (no database, auth, or external service calls). Designed for frequent polling with target response time < 100ms (typical < 10ms). Follows the platform's standard API envelope pattern.
 
 **Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
-- Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
-- Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
+- Standard variants: `971125744` (SPRINT-0058, three independent endpoints: -a, -b, -c), `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
+- Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, `1021340604`, `318187519`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
 
 ---
 
 ## Changelog
+
+### 2026-07-12 — SPRINT-0058: Three independent smoke test health check endpoints (971125744)
+
+**Added:**
+- Three independent variant-specific health check endpoints for deployment verification and monitoring:
+  - `/api/healthz-smoke-971125744-a` — Returns `{ ok: true, variant: "971125744" }`
+  - `/api/healthz-smoke-971125744-b` — Returns `{ ok: true, variant: "971125744" }`
+  - `/api/healthz-smoke-971125744-c` — Returns `{ ok: true, variant: "971125744" }`
+- Each endpoint is completely self-contained with zero dependencies (no database, auth, or external calls)
+- Full unit test coverage for all three endpoints (7 tests per endpoint = 21 tests total)
+
+**Product value:**
+- Operations teams can verify three independent application variants are deployed and reachable in production
+- Supports distributed deployment scenarios and smoke test verification
+- Enables comprehensive monitoring of deployment verification across multiple independent endpoints
+- Three independent endpoints allow parallel testing and deployment validation
+
+**Technical scope:**
+- Three new health check endpoints with full test coverage (21 tests total, 100% passing)
+- Completely independent implementations (no shared code)
+- Zero breaking changes; all existing functionality unchanged
 
 ### 2026-07-11 — SPRINT-0055: Bugfix planning & health check endpoints (254027906, 382671714)
 
