@@ -1,4 +1,4 @@
-# VRTX-0380: Endpoint C — /api/healthz-smoke-1065487472-c
+# VRTX-0380: Endpoint B — /api/healthz-smoke-1065487472-b
 
 **Ticket:** VRTX-0380 (TASK)
 **Story:** VRTX-0377 — Implement Three Variant-Specific Health Check Endpoints
@@ -9,10 +9,10 @@
 
 ## 1. Scope & Context
 
-Implement the third independent variant-specific health check endpoint `/api/healthz-smoke-1065487472-c` for deployment verification and monitoring. This endpoint is completely self-contained with no dependencies and can be implemented in parallel with endpoints A and B.
+Implement the second independent variant-specific health check endpoint `/api/healthz-smoke-1065487472-b` for deployment verification and monitoring. This endpoint is completely self-contained with no dependencies and can be implemented in parallel with endpoints A and C.
 
 **Endpoint Behavior:**
-- **Route:** `/api/healthz-smoke-1065487472-c`
+- **Route:** `/api/healthz-smoke-1065487472-b`
 - **Method:** GET
 - **Response:** `{ ok: true, variant: "1065487472" }` (HTTP 200)
 - **Headers:** `Content-Type: application/json`
@@ -21,20 +21,20 @@ Implement the third independent variant-specific health check endpoint `/api/hea
 - **Public:** No authentication required
 
 **Product Value:**
-Operations teams can verify variant 1065487472-c is deployed and reachable in production, enabling safe canary deployments and distributed deployment scenarios.
+Operations teams can verify variant 1065487472-b is deployed and reachable in production, enabling safe canary deployments and distributed deployment scenarios.
 
 ---
 
 ## 2. Implementation Details
 
-### 2.1 Route Handler: `src/app/api/healthz-smoke-1065487472-c/route.ts`
+### 2.1 Route Handler: `src/app/api/healthz-smoke-1065487472-b/route.ts`
 
 **Requirements:**
 - Export `async function GET(): Promise<NextResponse>`
 - Return `NextResponse.json({ ok: true, variant: "1065487472" }, { status: 200 })`
 - No database queries, no auth checks, no external calls
 - Hardcoded variant identifier
-- Match the established pattern from `/api/healthz-smoke-637917955-c`
+- Match the established pattern from `/api/healthz-smoke-637917955-b`
 
 **Implementation Pattern:**
 ```typescript
@@ -60,7 +60,7 @@ Include documentation comment explaining:
 - Public endpoint, no auth required
 - Typical use: load balancers, monitoring systems, Kubernetes probes
 
-### 2.2 Test Suite: `src/app/api/healthz-smoke-1065487472-c/__tests__/route.test.ts`
+### 2.2 Test Suite: `src/app/api/healthz-smoke-1065487472-b/__tests__/route.test.ts`
 
 **Test Coverage: 15 comprehensive tests**
 
@@ -105,8 +105,8 @@ Include documentation comment explaining:
 
 | File Path | Owner | Responsibility |
 |-----------|-------|-----------------|
-| `src/app/api/healthz-smoke-1065487472-c/route.ts` | Engineer | Implement GET handler, match response pattern, no dependencies |
-| `src/app/api/healthz-smoke-1065487472-c/__tests__/route.test.ts` | Engineer | Implement 15 test cases, verify 100% coverage, all tests passing |
+| `src/app/api/healthz-smoke-1065487472-b/route.ts` | Engineer | Implement GET handler, match response pattern, no dependencies |
+| `src/app/api/healthz-smoke-1065487472-b/__tests__/route.test.ts` | Engineer | Implement 15 test cases, verify 100% coverage, all tests passing |
 
 ---
 
@@ -139,10 +139,10 @@ Include documentation comment explaining:
 **Run tests for this endpoint:**
 ```bash
 # Single file
-npx vitest run src/app/api/healthz-smoke-1065487472-c/__tests__/route.test.ts
+npx vitest run src/app/api/healthz-smoke-1065487472-b/__tests__/route.test.ts
 
 # Watch mode
-npx vitest src/app/api/healthz-smoke-1065487472-c/__tests__/route.test.ts
+npx vitest src/app/api/healthz-smoke-1065487472-b/__tests__/route.test.ts
 
 # Coverage
 npm run test:coverage
