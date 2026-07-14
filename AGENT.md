@@ -223,6 +223,10 @@ If there's ambiguity, misalignment, or a blocker:
 
 ## Changelog
 
+### 2026-07-14 — SPRINT-0067: Three independent variant endpoints (no agent protocol changes)
+
+This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
+
 ### 2026-07-12 — SPRINT-0064: Three independent variant endpoints (no agent protocol changes)
 
 This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
