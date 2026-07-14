@@ -189,3 +189,5 @@ Or coverage:
 ```bash
 npm run test:coverage
 ```
+
+TDD-RESULT: 15 passed, 0 failed
