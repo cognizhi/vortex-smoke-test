@@ -49,4 +49,4 @@ Test Files  1 passed (1)
   Duration  569ms (transform 23ms, setup 40ms, collect 24ms, tests 36ms, environment 271ms, prepare 18ms)
 ```
 
-**TDD-RESULT: 15 passed, 0 failed**
+TDD-RESULT: 15 passed, 0 failed
