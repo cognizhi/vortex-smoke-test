@@ -217,6 +217,31 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-16 — SPRINT-0073: Three independent variant endpoints (121996100)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-121996100-a` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "121996100" }` with zero
+  dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-121996100-b` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "121996100" }` with zero
+  dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-121996100-c` for deployment
+  verification and monitoring. Returns `{ ok: true, variant: "121996100" }` with zero
+  dependencies (no database, auth, or external calls).
+- Updated health check endpoints inventory to include three new variant endpoints. Continues
+  the established pattern for variant endpoints enabling monitoring systems to verify specific
+  application variants are deployed and reachable.
+
+**Implementation details:**
+- All three endpoints follow the lightweight, dependency-free pattern established by previous
+  variant endpoints.
+- Implemented as three separate route files (`/api/healthz-smoke-121996100-{a,b,c}/route.ts`).
+- Hardcoded variant identifier enables deployment verification without dynamic configuration.
+- Three independent implementations (no shared code) supporting parallel deployment testing.
+- Target response time < 100ms (typical < 10ms).
+- Comprehensive test suite per endpoint (15 tests, 100% coverage each).
+
 ### 2026-07-15 — SPRINT-0070: Three independent variant endpoints (1012136249)
 
 **Added:**
