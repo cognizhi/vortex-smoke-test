@@ -77,3 +77,21 @@ The regression test confirms that after creating the endpoint handler, the endpo
 - Responds in < 100ms as required
 
 All acceptance criteria are satisfied.
+
+## Test Execution Output
+
+```
+$ vitest "src/app/api/healthz-smoke-bugfix-487941300/__tests__/healthz-smoke-bugfix-487941300.test.ts" --run
+ Vitest  v2.1.9
+
+ RUN  v2.1.9 /workspace/repo
+
+ ✓ src/app/api/healthz-smoke-bugfix-487941300/__tests__/healthz-smoke-bugfix-487941300.test.ts (1 test) 42ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  02:43:21
+   Duration  566ms
+```
+
+TDD-RESULT: 1 passed, 0 failed
