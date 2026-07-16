@@ -40,7 +40,7 @@ const DESIGN = {
 
 const DEFAULT_PROPS: BookingFlowProps = {
   slug: 'test-salon',
-  businessName: 'Test Salon',
+  customSiteName: 'Test Salon',
   staff: STAFF,
   services: SERVICES,
   design: DESIGN,

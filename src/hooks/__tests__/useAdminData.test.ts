@@ -18,7 +18,7 @@ afterEach(() => {
 /**
  * Test helper: Create a mock Response object
  */
-function createMockResponse<T>(
+function createMockResponse(
   options: {
     ok?: boolean
     status?: number
@@ -38,7 +38,7 @@ function createMockResponse<T>(
   } = options
 
   const headers = new Map<string, string>()
-  if (contentLength !== undefined) {
+  if (contentLength !== undefined && contentLength !== null) {
     headers.set('content-length', contentLength)
   }
 
