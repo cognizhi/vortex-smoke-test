@@ -116,3 +116,5 @@ Expected headers:
 - HTTP/1.1 200 OK
 - Content-Type: application/json
 - Content-Length: ~39 bytes
+
+TDD-RESULT: 14 passed, 0 failed
