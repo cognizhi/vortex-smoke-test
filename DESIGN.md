@@ -132,6 +132,10 @@ Branding**.
 
 ## Changelog
 
+### 2026-07-16 — SPRINT-0072: Three independent variant endpoints (no design changes)
+
+This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.
+
 ### 2026-07-15 — SPRINT-0070: Three independent variant endpoints (no design changes)
 
 This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.

@@ -124,7 +124,7 @@ The platform provides health check endpoints for monitoring systems and load bal
 
 **Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
 - Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
-- Multi-endpoint variants (3 independent endpoints each): `276127630` (SPRINT-0069), `1065487472` (SPRINT-0067), `637917955` (SPRINT-0064)
+- Multi-endpoint variants (3 independent endpoints each): `737151464` (SPRINT-0072), `276127630` (SPRINT-0069), `1065487472` (SPRINT-0067), `637917955` (SPRINT-0064)
 - Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
@@ -132,6 +132,21 @@ All health check endpoints are **public** (no authentication required) to ensure
 ---
 
 ## Changelog
+
+### 2026-07-16 — SPRINT-0072: Three independent variant endpoints (737151464)
+
+**Added:**
+- Variant-specific health check endpoint `/api/healthz-smoke-737151464-a` for deployment verification and monitoring. Returns `{ ok: true, variant: "737151464" }` with zero dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-737151464-b` for deployment verification and monitoring. Returns `{ ok: true, variant: "737151464" }` with zero dependencies (no database, auth, or external calls).
+- Variant-specific health check endpoint `/api/healthz-smoke-737151464-c` for deployment verification and monitoring. Returns `{ ok: true, variant: "737151464" }` with zero dependencies (no database, auth, or external calls).
+- Extended deployment verification system enabling operations teams to monitor three variant builds of application 737151464 in production.
+- Continues the established pattern for variant endpoints supporting safe canary deployments and traffic management strategies.
+
+**Product value:**
+- Operations teams can verify three independent 737151464 variants are deployed and reachable in production
+- Supports distributed deployment scenarios and parallel smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints support A/B testing and canary deployment strategies
 
 ### 2026-07-15 — SPRINT-0070: Three independent variant endpoints (1012136249)
 
