@@ -67,3 +67,7 @@ The regression test ensures:
 - Response always returns status 200 (no conditional logic, always healthy)
 
 This test prevents regression if the endpoint is accidentally removed or renamed in future changes.
+
+---
+
+TDD-RESULT: 1 passed, 0 failed
