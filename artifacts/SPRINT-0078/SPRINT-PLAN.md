@@ -98,6 +98,12 @@ curl http://localhost:3000/api/healthz-smoke-bugfix-ha2-633156065
 
 ---
 
+## Reviewer Note
+
+⚠️ **Regression Test Requirement:** Both VRTX-0454 and VRTX-0455 defect fixes **must include regression tests** that assert the exact JSON response shape `{"ok":true,"variant":"<VARIANT_ID>"}` (no additional fields, no null values, strict format). This ensures monitoring systems and load balancers receive exactly the expected response structure for deployment verification. Tests should verify both the schema and the status code (200) together.
+
+---
+
 ## Acceptance Criteria (at the sprint level)
 
 - [x] Root-caused both defects: missing endpoint files
