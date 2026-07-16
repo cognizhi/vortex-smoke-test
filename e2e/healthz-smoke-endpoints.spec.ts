@@ -1,40 +1,40 @@
 import { test, expect } from '@playwright/test'
 
-test.describe('Healthz smoke endpoints', () => {
-  test('GET /api/healthz-smoke-276127630-a returns 200 with ok and variant', async ({
+test.describe('Healthz smoke endpoints — SPRINT-0070', () => {
+  test('GET /api/healthz-smoke-1012136249-a returns 200 with ok and variant', async ({
     request,
   }) => {
-    const response = await request.get('/api/healthz-smoke-276127630-a')
+    const response = await request.get('/api/healthz-smoke-1012136249-a')
     expect(response.status()).toBe(200)
     const body = await response.json()
-    expect(body).toEqual({ ok: true, variant: '276127630' })
+    expect(body).toEqual({ ok: true, variant: '1012136249' })
   })
 
-  test('GET /api/healthz-smoke-276127630-b returns 200 with ok and variant', async ({
+  test('GET /api/healthz-smoke-1012136249-b returns 200 with ok and variant', async ({
     request,
   }) => {
-    const response = await request.get('/api/healthz-smoke-276127630-b')
+    const response = await request.get('/api/healthz-smoke-1012136249-b')
     expect(response.status()).toBe(200)
     const body = await response.json()
-    expect(body).toEqual({ ok: true, variant: '276127630' })
+    expect(body).toEqual({ ok: true, variant: '1012136249' })
   })
 
-  test('GET /api/healthz-smoke-276127630-c returns 200 with ok and variant', async ({
+  test('GET /api/healthz-smoke-1012136249-c returns 200 with ok and variant', async ({
     request,
   }) => {
-    const response = await request.get('/api/healthz-smoke-276127630-c')
+    const response = await request.get('/api/healthz-smoke-1012136249-c')
     expect(response.status()).toBe(200)
     const body = await response.json()
-    expect(body).toEqual({ ok: true, variant: '276127630' })
+    expect(body).toEqual({ ok: true, variant: '1012136249' })
   })
 
   test('all three endpoints respond with correct content-type', async ({
     request,
   }) => {
     const endpoints = [
-      '/api/healthz-smoke-276127630-a',
-      '/api/healthz-smoke-276127630-b',
-      '/api/healthz-smoke-276127630-c',
+      '/api/healthz-smoke-1012136249-a',
+      '/api/healthz-smoke-1012136249-b',
+      '/api/healthz-smoke-1012136249-c',
     ]
 
     for (const endpoint of endpoints) {
@@ -45,9 +45,9 @@ test.describe('Healthz smoke endpoints', () => {
 
   test('all three endpoints respond quickly', async ({ request }) => {
     const endpoints = [
-      '/api/healthz-smoke-276127630-a',
-      '/api/healthz-smoke-276127630-b',
-      '/api/healthz-smoke-276127630-c',
+      '/api/healthz-smoke-1012136249-a',
+      '/api/healthz-smoke-1012136249-b',
+      '/api/healthz-smoke-1012136249-c',
     ]
 
     for (const endpoint of endpoints) {
@@ -60,9 +60,9 @@ test.describe('Healthz smoke endpoints', () => {
 
   test('concurrent requests to all endpoints succeed', async ({ request }) => {
     const endpoints = [
-      '/api/healthz-smoke-276127630-a',
-      '/api/healthz-smoke-276127630-b',
-      '/api/healthz-smoke-276127630-c',
+      '/api/healthz-smoke-1012136249-a',
+      '/api/healthz-smoke-1012136249-b',
+      '/api/healthz-smoke-1012136249-c',
     ]
 
     const promises = []
