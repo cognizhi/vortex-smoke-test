@@ -41,3 +41,6 @@ Expected response:
 ```json
 {"ok":true,"variant":"<variant-id>"}
 ```
+
+## Reviewer Note
+Both defects require a regression test to assert the exact JSON shape `{"ok":true,"variant":"..."}` is returned. The test should verify the response format exactly matches the contract, not just that the endpoint returns 200 status. This ensures future changes do not alter the response structure that monitoring and load-balancer systems depend on.
