@@ -1,9 +1,8 @@
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest';
-import { render, screen, waitFor, within } from '@testing-library/react';
+import { describe, it, expect, beforeEach, afterEach } from 'vitest';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ThemeProvider } from '@/lib/theme-context';
 import { ThemeToggle } from '../theme-toggle';
-import { Sun, Moon, Zap } from 'lucide-react';
 
 describe('ThemeToggle Component', () => {
   beforeEach(() => {

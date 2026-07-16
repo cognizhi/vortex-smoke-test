@@ -92,7 +92,7 @@ describe('CreateDiscountForm', () => {
       render(<CreateDiscountForm onClose={mockOnClose} onSuccess={mockOnSuccess} />)
 
       const typeSelect = screen.getByLabelText(/Discount Type/i)
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
 
       const valueInput = screen.getByLabelText(/Discount Percentage/i)
       await userEvent.type(valueInput, '150')
@@ -107,7 +107,7 @@ describe('CreateDiscountForm', () => {
       render(<CreateDiscountForm onClose={mockOnClose} onSuccess={mockOnSuccess} />)
 
       const typeSelect = screen.getByLabelText(/Discount Type/i)
-      await userEvent.selectOption(typeSelect, 'fixed_amount')
+      await userEvent.selectOptions(typeSelect, 'fixed_amount')
 
       const valueInput = screen.getByLabelText(/Discount Amount/i)
       await userEvent.type(valueInput, '999999')
@@ -156,7 +156,7 @@ describe('CreateDiscountForm', () => {
       futureDate.setDate(futureDate.getDate() + 7)
 
       await userEvent.type(codeInput, 'SUMMER20')
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       await userEvent.type(valueInput, '20')
       fireEvent.change(expirationInput, {
         target: { value: futureDate.toISOString().slice(0, 16) },
@@ -195,7 +195,7 @@ describe('CreateDiscountForm', () => {
       futureDate.setDate(futureDate.getDate() + 7)
 
       await userEvent.type(codeInput, 'SUMMER20')
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       await userEvent.type(valueInput, '20')
       fireEvent.change(expirationInput, {
         target: { value: futureDate.toISOString().slice(0, 16) },
@@ -229,7 +229,7 @@ describe('CreateDiscountForm', () => {
       futureDate.setDate(futureDate.getDate() + 7)
 
       await userEvent.type(codeInput, 'SUMMER20')
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       await userEvent.type(valueInput, '20')
       fireEvent.change(expirationInput, {
         target: { value: futureDate.toISOString().slice(0, 16) },
@@ -263,7 +263,7 @@ describe('CreateDiscountForm', () => {
       futureDate.setDate(futureDate.getDate() + 7)
 
       await userEvent.type(codeInput, 'SUMMER20')
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       await userEvent.type(valueInput, '20')
       fireEvent.change(expirationInput, {
         target: { value: futureDate.toISOString().slice(0, 16) },
@@ -305,10 +305,10 @@ describe('CreateDiscountForm', () => {
 
       const typeSelect = screen.getByLabelText(/Discount Type/i)
 
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       expect(screen.getByText(/0.01% – 100%/)).toBeInTheDocument()
 
-      await userEvent.selectOption(typeSelect, 'fixed_amount')
+      await userEvent.selectOptions(typeSelect, 'fixed_amount')
       expect(screen.getByText(/\$0.01 – \$99,999.99/)).toBeInTheDocument()
     })
 
@@ -326,7 +326,7 @@ describe('CreateDiscountForm', () => {
       futureDate.setDate(futureDate.getDate() + 7)
 
       await userEvent.type(codeInput, 'SUMMER20')
-      await userEvent.selectOption(typeSelect, 'percentage')
+      await userEvent.selectOptions(typeSelect, 'percentage')
       await userEvent.type(valueInput, '20')
       fireEvent.change(expirationInput, {
         target: { value: futureDate.toISOString().slice(0, 16) },
