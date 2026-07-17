@@ -79,6 +79,9 @@ curl -i http://localhost:3000/api/healthz-smoke-bugfix-ha2-244944780
 - **VRTX-0469:** See `artifacts/SPRINT-0082/VRTX-0469/PLAN.md`
 - **VRTX-0470:** See `artifacts/SPRINT-0082/VRTX-0470/PLAN.md`
 
+## Reviewer Note
+**Regression Testing Requirement:** Both VRTX-0469 and VRTX-0470 defects must include regression test assertions that validate the exact JSON response shape: `{"ok":true,"variant":"..."}`. This ensures the response format remains stable across future changes and prevents regressions where the JSON structure might be altered (e.g., additional fields added, field order changed, or data types modified).
+
 ## Notes
 - These are simple infrastructure endpoints, not product features
 - No schema changes needed
