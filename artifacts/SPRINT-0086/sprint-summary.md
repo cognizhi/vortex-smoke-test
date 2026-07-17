@@ -87,6 +87,8 @@ SPRINT-0086 successfully completed a targeted bugfix sprint to resolve two missi
 
 ## Reviewer Notes
 
+**Reviewer Note**: ✅ Both VRTX-0488 (`/healthz-smoke-bugfix-ha-28079633`) and VRTX-0489 (`/healthz-smoke-bugfix-ha2-506894661`) have been verified against their repro steps — both now return HTTP 200 with the correct JSON shape instead of 404, meeting all acceptance criteria.
+
 ### Verification Against Repro Steps
 
 **VRTX-0488 Repro Verification**:
