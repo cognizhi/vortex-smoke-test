@@ -24,10 +24,6 @@
  */
 import { NextResponse } from 'next/server';
 
-interface Params {
-  __param: string[];
-}
-
 /**
  * GET handler for /api/healthz-smoke-bugfix-[variant]
  *
@@ -42,9 +38,13 @@ interface Params {
  * @param params - Next.js route params containing the catch-all segment
  * @returns NextResponse with status 200 and body { ok: true, variant: "<variant>" }
  */
-export async function GET(_req: Request, { params }: { params: Params }): Promise<NextResponse> {
+export async function GET(
+  _req: Request,
+  { params }: { params: Promise<Record<string, string | string[]>> }
+): Promise<NextResponse> {
   // Extract variant from the catch-all segment
-  const variantParts = params.__param || [];
+  const resolvedParams = await params;
+  const variantParts = (resolvedParams.__param || []) as string[];
   const variant = variantParts.join('/');
 
   return NextResponse.json(
