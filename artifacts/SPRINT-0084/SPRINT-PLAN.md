@@ -89,6 +89,9 @@ Existing test patterns in `e2e/healthz-smoke-endpoints-sprint-0082.spec.ts` conf
 - Add SPRINT-0084 tests to `e2e/healthz-smoke-endpoints-sprint-0084.spec.ts` (following SPRINT-0082 pattern)
 - Run: `bun run test:e2e` or `npx playwright test e2e/healthz-smoke-endpoints-sprint-0084.spec.ts`
 
+### Reviewer Note
+**Both VRTX-0477 and VRTX-0478 must include regression tests that explicitly assert the exact JSON response shape**: `{ "ok": true, "variant": "<id>" }`. The test must validate that the `variant` field contains the correct numeric identifier (609817388 for ha endpoint, 1065754851 for ha2 endpoint) to ensure contract compliance with monitoring systems and load balancers that depend on this specific structure.
+
 ---
 
 ## Observable Behavior Change
