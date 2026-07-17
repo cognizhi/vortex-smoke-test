@@ -104,6 +104,9 @@ Expected response for both:
 }
 ```
 
+### Reviewer Note
+⚠️ **REGRESSION TEST REQUIREMENT**: Both VRTX-0488 and VRTX-0489 defects **MUST** include regression tests that validate the exact JSON response shape `{"ok":true,"variant":"<id>"}`. Previous sprints have seen infrastructure routing issues that silently return 404 HTML instead of the expected 200 JSON response. The regression test prevents this from regressing by explicitly asserting both the HTTP 200 status code AND the precise JSON structure with the correct variant ID.
+
 ---
 
 ## Observable Behavior Change
