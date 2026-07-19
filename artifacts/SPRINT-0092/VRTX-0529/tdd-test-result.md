@@ -100,8 +100,6 @@ PASS src/app/api/healthz-smoke-509572604-b/__tests__/route.test.ts
 
 ## Summary
 
-**TDD-RESULT: 3 passed, 0 failed**
-
 All test cases pass. The implementation:
 - Returns correct HTTP status (200)
 - Returns exact JSON payload: `{ ok: true, variant: '509572604' }`
@@ -111,3 +109,5 @@ All test cases pass. The implementation:
 - Pure function with no side effects
 
 ✅ **TDD workflow complete: Red → Green → Refactor (none needed)**
+
+TDD-RESULT: 3 passed, 0 failed
