@@ -217,6 +217,34 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-19 — SPRINT-0090: Three independent smoke test endpoints (733116439)
+
+**Added:**
+- Three independent smoke test endpoints: `/api/healthz-smoke-733116439-a`, `/api/healthz-smoke-733116439-b`, `/api/healthz-smoke-733116439-c`
+- Each endpoint returns `{ ok: true, variant: "733116439" }` with HTTP 200
+- All endpoints are stateless with zero dependencies (no database, auth, or external calls)
+- Comprehensive test coverage: Vitest unit tests (15+ per endpoint)
+- Designed for parallel, independent implementation supporting autonomous team delivery
+- Demonstrates sprint planning framework (EPIC/STORY/TASK decomposition)
+
+**Implementation details:**
+- All three endpoints follow the lightweight, dependency-free pattern established by previous variant endpoints
+- Implemented as three separate route files (`/api/healthz-smoke-733116439-{a,b,c}/route.ts`)
+- Hardcoded variant identifier `733116439` enables deployment verification without dynamic configuration
+- Three independent implementations (no shared code) supporting parallel team workflows
+- Target response time < 100ms
+
+**Testing infrastructure:**
+- Unit tests per endpoint: 15+ test cases covering HTTP status, JSON payload, headers, performance, concurrency, and no external dependencies
+- All tests must pass in local dev and production build environments
+- Concurrent load test (50 concurrent calls) to verify thread safety and performance stability
+
+**Decomposition & Execution:**
+- Epic: VRTX-0517 (Add Three Independent Health Check Endpoints)
+- Story: VRTX-0518 (Implementation & Testing Infrastructure)
+- Tasks: VRTX-0519 (endpoint A), VRTX-0520 (endpoint B), VRTX-0521 (endpoint C), VRTX-0522 (Integration & Suite)
+- All tasks parallelizable with no file conflicts or shared code modifications
+
 ### 2026-07-19 — SPRINT-0088: Three independent smoke test endpoints (53261999)
 
 **Added:**
