@@ -223,6 +223,10 @@ If there's ambiguity, misalignment, or a blocker:
 
 ## Changelog
 
+### 2026-07-19 — SPRINT-0092: Three independent smoke test endpoints (509572604) (no agent protocol changes)
+
+This sprint focused on adding three independent smoke test endpoints for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
+
 ### 2026-07-16 — SPRINT-0073: Three independent variant endpoints (121996100) (no agent protocol changes)
 
 This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
