@@ -223,6 +223,23 @@ If there's ambiguity, misalignment, or a blocker:
 
 ## Changelog
 
+### 2026-07-19 — SPRINT-0090: Three independent smoke test endpoints (733116439) (demonstrates sprint planning framework)
+
+This sprint demonstrates the sprint planning framework with three independent health check endpoints for deployment verification. Highlights autonomous SDLC execution:
+- Epic decomposition (VRTX-0517): One EPIC per standalone feature
+- Story decomposition (VRTX-0518): Coordinates all tasks within the epic
+- Task decomposition (VRTX-0519, VRTX-0520, VRTX-0521, VRTX-0522): Fully parallelizable with no file conflicts
+- Each task has full PLAN.md documentation with implementation details and acceptance criteria
+- Demonstrates minimum viable backlog principle — no over-decomposition
+
+**Agent Protocol Additions:**
+- Product agent: Demonstrates EPIC/STORY/TASK decomposition pattern for parallel, independent task execution
+- Engineer agents: Each can work independently on VRTX-0519, VRTX-0520, VRTX-0521 with no merge conflicts (different directories)
+- QA agent: Integration testing (VRTX-0522) verifies all three endpoints work together
+- All agents coordinate through sprint plan and per-task PLAN.md documentation
+
+**No changes to core agent responsibilities, working agreements, or collaboration protocols** — this sprint validates the framework through example execution.
+
 ### 2026-07-16 — SPRINT-0073: Three independent variant endpoints (121996100) (no agent protocol changes)
 
 This sprint focused on adding three variant-specific health check endpoints for deployment verification. No changes to agent roles, responsibilities, working agreements, or collaboration protocols.
