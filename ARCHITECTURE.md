@@ -165,7 +165,7 @@ store in prod); served back through `/api/avatars/[filename]`.
   variants: `85511011` (SPRINT-0054), `28611693` (SPRINT-0053), `453353908` (SPRINT-0051), `992377535` (SPRINT-0050), `96685` (SPRINT-0048), `763023087` (SPRINT-0039), `800427409` (SPRINT-0038), `54367903` (SPRINT-0037), `688707801` (SPRINT-0034), `572185676` (SPRINT-0029), `901947994` (SPRINT-0027), `305070125` (SPRINT-0015), `110428092` (SPRINT-0013),
   `48842051` (SPRINT-0009), `963602537` (SPRINT-0007), `423911289` (SPRINT-0006),
   `547016860` (SPRINT-0005), `518124667` (SPRINT-0003), `859005244` (SPRINT-0002),
-  `908186049` (SPRINT-0001), `637917955-a` (SPRINT-0064), `637917955-b` (SPRINT-0064), `637917955-c` (SPRINT-0064), `1065487472-a` (SPRINT-0067), `1065487472-b` (SPRINT-0067), `1065487472-c` (SPRINT-0067), `276127630-a` (SPRINT-0069), `276127630-b` (SPRINT-0069), `276127630-c` (SPRINT-0069), `1012136249-a` (SPRINT-0070), `1012136249-b` (SPRINT-0070), `1012136249-c` (SPRINT-0070), `121996100-a` (SPRINT-0073), `121996100-b` (SPRINT-0073), `121996100-c` (SPRINT-0073), `53261999-a` (SPRINT-0088), `53261999-b` (SPRINT-0088), `53261999-c` (SPRINT-0088), `509572604-a` (SPRINT-0092), `509572604-b` (SPRINT-0092), `509572604-c` (SPRINT-0092).
+  `908186049` (SPRINT-0001), `637917955-a` (SPRINT-0064), `637917955-b` (SPRINT-0064), `637917955-c` (SPRINT-0064), `1065487472-a` (SPRINT-0067), `1065487472-b` (SPRINT-0067), `1065487472-c` (SPRINT-0067), `276127630-a` (SPRINT-0069), `276127630-b` (SPRINT-0069), `276127630-c` (SPRINT-0069), `1012136249-a` (SPRINT-0070), `1012136249-b` (SPRINT-0070), `1012136249-c` (SPRINT-0070), `121996100-a` (SPRINT-0073), `121996100-b` (SPRINT-0073), `121996100-c` (SPRINT-0073), `53261999-a` (SPRINT-0088), `53261999-b` (SPRINT-0088), `53261999-c` (SPRINT-0088), `509572604-a` (SPRINT-0092), `509572604-b` (SPRINT-0092), `509572604-c` (SPRINT-0092), `929192825-a` (SPRINT-0093), `929192825-b` (SPRINT-0093), `929192825-c` (SPRINT-0093).
 - **`/api/healthz-smoke-bugfix-{variant}`** (SPRINT-0052+) — Bugfix smoke test health
   check endpoints following the same variant-specific pattern. Each endpoint returns
   `{ ok: true, variant: "{variant-id}" }` with zero dependencies. Used for deployment
@@ -216,6 +216,27 @@ runtime-only secrets (no requests are served during static analysis).
 ---
 
 ## Changelog
+
+### 2026-07-19 — SPRINT-0093: Three independent smoke test endpoints (929192825)
+
+**Added:**
+- Three independent smoke test endpoints: `/api/healthz-smoke-929192825-a`, `/api/healthz-smoke-929192825-b`, `/api/healthz-smoke-929192825-c`
+- Each endpoint returns `{ ok: true, variant: "929192825" }` with HTTP 200
+- All endpoints are stateless with zero dependencies (no database, auth, or external calls)
+- Comprehensive test coverage: Vitest unit tests per endpoint
+- Designed for parallel, independent implementation supporting autonomous team delivery
+
+**Implementation details:**
+- All three endpoints follow the lightweight, dependency-free pattern established by previous variant endpoints
+- Implemented as three separate route files (`/api/healthz-smoke-929192825-{a,b,c}/route.ts`)
+- Hardcoded variant identifier `929192825` enables deployment verification without dynamic configuration
+- Three independent implementations (no shared code) supporting parallel team workflows
+- Target response time < 10ms (typical pure response generation)
+
+**Testing infrastructure:**
+- Unit tests per endpoint: mocking NextRequest/NextResponse, validating 200 status and JSON structure
+- Comprehensive test suite covering response status, body structure, field types, Content-Type header
+- 100% code coverage for all three endpoints (trivial endpoints with no branching logic)
 
 ### 2026-07-19 — SPRINT-0092: Three independent smoke test endpoints (509572604)
 
