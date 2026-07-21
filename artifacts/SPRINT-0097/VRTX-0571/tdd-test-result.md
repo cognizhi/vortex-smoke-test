@@ -190,4 +190,3 @@ Running 6 tests using 4 workers
 ---
 
 TDD-RESULT: 15 passed, 0 failed
-(9 unit tests + 6 E2E tests = 15 total verification checks)
