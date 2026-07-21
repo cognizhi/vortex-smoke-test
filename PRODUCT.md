@@ -133,6 +133,25 @@ All health check endpoints are **public** (no authentication required) to ensure
 
 ## Changelog
 
+### 2026-07-21 — SPRINT-0098: Three independent smoke test endpoints (107173471)
+
+**Added:**
+- Three independent smoke test endpoints: `/api/healthz-smoke-107173471-a`, `/api/healthz-smoke-107173471-b`, `/api/healthz-smoke-107173471-c`
+- Each endpoint returns `{ ok: true, variant: "107173471" }` with HTTP 200
+- Extends deployment verification system for distributed deployments and A/B testing scenarios
+- Comprehensive test coverage ensuring reliability and uptime monitoring
+
+**Product value:**
+- Operations teams can verify the 107173471 variant is deployed and reachable in production
+- Supports distributed deployment scenarios and parallel smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints support A/B testing and canary deployment strategies
+
+**Implementation approach:**
+- Designed for parallel, independent team workflow (no shared code between endpoints)
+- Sprint planning framework demonstrating EPIC/STORY/TASK decomposition with autonomous execution
+- Comprehensive test harness (Vitest unit tests + Playwright E2E tests)
+
 ### 2026-07-21 — SPRINT-0097: Three independent smoke test endpoints (661868846)
 
 **Added:**
