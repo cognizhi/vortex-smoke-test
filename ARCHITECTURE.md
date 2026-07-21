@@ -217,6 +217,28 @@ runtime-only secrets (no requests are served during static analysis).
 
 ## Changelog
 
+### 2026-07-21 — SPRINT-0097: Three independent smoke test endpoints (661868846)
+
+**Added:**
+- Three independent smoke test endpoints: `/api/healthz-smoke-661868846-a`, `/api/healthz-smoke-661868846-b`, `/api/healthz-smoke-661868846-c`
+- Each endpoint returns `{ ok: true, variant: "661868846" }` with HTTP 200
+- All endpoints are stateless with zero dependencies (no database, auth, or external calls)
+- Comprehensive test coverage: Vitest unit tests + Playwright E2E tests
+- Designed for parallel, independent implementation supporting autonomous team delivery
+
+**Implementation details:**
+- All three endpoints follow the lightweight, dependency-free pattern established by previous variant endpoints
+- Implemented as three separate route files (`/api/healthz-smoke-661868846-{a,b,c}/route.ts`)
+- Hardcoded variant identifier `661868846` enables deployment verification without dynamic configuration
+- Three independent implementations (no shared code) supporting parallel team workflows
+- Target response time < 10ms (typical pure response generation)
+
+**Testing infrastructure:**
+- Unit tests per endpoint: mocking NextRequest/NextResponse, validating 200 status and JSON structure
+- Comprehensive test suite covering response status, body structure, field types, Content-Type header
+- E2E tests via Playwright: full HTTP requests verifying all three endpoints respond correctly
+- 100% code coverage for all three endpoints (trivial endpoints with no branching logic)
+
 ### 2026-07-19 — SPRINT-0093: Three independent smoke test endpoints (929192825)
 
 **Added:**
