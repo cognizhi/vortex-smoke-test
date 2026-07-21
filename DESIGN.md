@@ -132,6 +132,14 @@ Branding**.
 
 ## Changelog
 
+### 2026-07-21 — SPRINT-0098: Three independent smoke test endpoints (no design changes)
+
+This sprint focused on adding three independent smoke test endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.
+
+### 2026-07-21 — SPRINT-0097: Three independent smoke test endpoints (no design changes)
+
+This sprint focused on adding three independent smoke test endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.
+
 ### 2026-07-19 — SPRINT-0092: Three independent smoke test endpoints (no design changes)
 
 This sprint focused on adding three independent smoke test endpoints for deployment verification. No changes to the design system, platform tokens, or visual components.
