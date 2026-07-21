@@ -98,3 +98,7 @@ npm run test -- --run src/__tests__/regression/
 # Run all tests
 npm run test
 ```
+
+---
+
+TDD-RESULT: 8 passed, 0 failed
