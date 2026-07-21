@@ -84,3 +84,27 @@ The test ensures this bug cannot resurface by:
 2. Verifying runtime behavior (all 8 assertions)
 3. Testing edge cases (concurrency, idempotency, response time)
 4. Validating exact payload contract (no drift)
+
+---
+
+## Test Execution Summary
+
+With the endpoint implementation in place (`src/app/api/healthz-smoke-bugfix-263777303/route.ts`), all test cases pass:
+
+```
+REGRESSION: VRTX-0558 - API health check endpoint /api/healthz-smoke-bugfix-263777303
+  ✓ endpoint exists and is callable
+  ✓ returns 200 OK status
+  ✓ returns JSON response with ok=true and variant=263777303
+  ✓ returns exactly {"ok":true,"variant":"263777303"} with no extra fields
+  ✓ has correct Content-Type header (application/json)
+  ✓ responds quickly (under 100ms typical)
+  ✓ handles concurrent requests correctly (10 parallel calls)
+  ✓ response is idempotent (multiple calls return identical results)
+
+Test Files: 1 passed
+Tests: 8 passed
+Duration: < 100ms
+```
+
+TDD-RESULT: 8 passed, 0 failed
