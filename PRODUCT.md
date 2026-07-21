@@ -124,7 +124,7 @@ The platform provides health check endpoints for monitoring systems and load bal
 
 **Variant smoke test endpoints** — For distributed deployment and A/B testing scenarios, variant-specific health check endpoints allow monitoring systems to verify that specific application code paths are active. These endpoints follow the same lightweight, dependency-free pattern as `/api/healthz-smoke` but add a `variant` field to the response to identify the active build/configuration variant. Public endpoints, no authentication required. Current variants include:
 - Standard variants: `85511011`, `28611693`, `453353908`, `992377535`, `96685`, and many others
-- Multi-endpoint variants (3 independent endpoints each): `276127630` (SPRINT-0069), `1065487472` (SPRINT-0067), `637917955` (SPRINT-0064), `1012136249` (SPRINT-0070), `121996100` (SPRINT-0073), `53261999` (SPRINT-0088), `509572604` (SPRINT-0092)
+- Multi-endpoint variants (3 independent endpoints each): `276127630` (SPRINT-0069), `1065487472` (SPRINT-0067), `637917955` (SPRINT-0064), `1012136249` (SPRINT-0070), `121996100` (SPRINT-0073), `53261999` (SPRINT-0088), `509572604` (SPRINT-0092), `661868846` (SPRINT-0097)
 - Bugfix test variants: `254027906`, `382671714`, `432732268`, `407985318`, and others
 
 All health check endpoints are **public** (no authentication required) to ensure load balancers and external monitoring systems can reach them without credentials.
@@ -132,6 +132,25 @@ All health check endpoints are **public** (no authentication required) to ensure
 ---
 
 ## Changelog
+
+### 2026-07-21 — SPRINT-0097: Three independent smoke test endpoints (661868846)
+
+**Added:**
+- Three independent smoke test endpoints: `/api/healthz-smoke-661868846-a`, `/api/healthz-smoke-661868846-b`, `/api/healthz-smoke-661868846-c`
+- Each endpoint returns `{ ok: true, variant: "661868846" }` with HTTP 200
+- Extends deployment verification system for distributed deployments and A/B testing scenarios
+- Comprehensive test coverage ensuring reliability and uptime monitoring
+
+**Product value:**
+- Operations teams can verify the 661868846 variant is deployed and reachable in production
+- Supports distributed deployment scenarios and parallel smoke test verification
+- Enables comprehensive monitoring of variant-specific application builds
+- Three independent endpoints support A/B testing and canary deployment strategies
+
+**Implementation approach:**
+- Designed for parallel, independent team workflow (no shared code between endpoints)
+- Sprint planning framework demonstrating EPIC/STORY/TASK decomposition with autonomous execution
+- Comprehensive test harness (Vitest unit tests + Playwright E2E tests)
 
 ### 2026-07-19 — SPRINT-0092: Three independent smoke test endpoints (509572604)
 
